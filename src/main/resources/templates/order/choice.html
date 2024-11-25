@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>注文画面</title>
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+	<link th:href="@{/css/choice.css}" rel="stylesheet">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+
+<body>
+	<form id="orderForm" th:action="@{/order/choice}" method="POST">
+
+		<div id="order-number-form">
+			ここに注文番号を記入
+			<input type="number" id="digit0" oninput="moveFocus(0)" class="no-spinner">
+			<input type="number" id="digit1" oninput="moveFocus(1)" class="no-spinner">
+			<input type="number" id="digit2" oninput="moveFocus(2)" class="no-spinner">
+			<input type="number" id="digit3" oninput="moveFocus(3)" class="no-spinner">
+		</div>
+		<input type="hidden" id="orderNumber" name="orderNumber" value="0">
+		<input type="hidden" id="quantity" name="quantity" value="1">
+		<input type="hidden" id="price" name="price" value="0">
+
+		<p class="margin">料理名：<span id="dishName"></span></p>
+
+		<div class="number-input" style="display:flex;">
+			<div style="margin-top: 15px;">数量：</div>
+			<div id="orderCount" class="orderCount">
+				<button type="button" onclick="decrement()" aria-label="Decrement">◀</button>
+				<span class="number-value">1</span>
+				<button type="button" onclick="increment()" aria-label="Increment">▶</button>
+				<button type="submit" name="insert" id="addToCart" class="button"
+					onclick="askNotificationPermission()">カートに入れる</button>
+			</div>
+		</div>
+		<div class="margin">
+			<button type="button" name="viewCart" id="viewCart" class="js-modal-button">注文に進む</button>
+			<button type="button" name="viewRecord" id="viewRecord" class="view-record-button">注文履歴を表示</button>
+		</div>
+
+		<div id="modalOverlay" class="modal-overlay"></div> <!--モーダル画面の背景-->
+		<div id="modalContainer" class="order-modal"></div> <!--ここにモーダルをinnerHTMLで追加-->
+
+	</form>
+	<form id="backToTitle" th:action="@{/title/title}" method="POST">
+		<button type="submit" id="back-title" name="title">◀◀◀</button>
+		<button type="submit" id="test" name="test">テスト画面</button>
+	</form>
+	<script th:src="@{/js/order.js}"></script>
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+@charset "UTF-8";
+
+.shop-name {
+	/*	font-family: fantasy;*/
+	font-family: ‘ＭＳ 明朝’, serif;
+	font-size: 50px;
+}
+
+.center {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	/*	 ビューポートの高さに合わせて全体を中央揃えにする */
+}
+
+.start-button {
+	padding: 10px 20px;
+	font-size: 16px;
+	cursor: pointer;
+	color: red;
+}

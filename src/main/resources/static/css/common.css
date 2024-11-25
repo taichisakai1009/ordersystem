@@ -1,0 +1,136 @@
+@charset "UTF-8";
+
+/* 全体のリセット */
+body,
+h1,
+h2,
+h3,
+p,
+ul,
+li,
+a {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+:root {
+	--primary-yellow: #fff666;
+	--secondary-blue: #4466aa;
+	--dark-blue: #223366;
+	--background: #ffffcc;
+	--shadow-color: rgba(34, 51, 102, 0.2);
+}
+
+body {
+	background-color: var(--background);
+	font-family: "Courier New", monospace;
+	color: var(--dark-blue);
+	margin: 0;
+	padding: 0;
+	min-height: 100vh;
+}
+
+/* ヘッダー */
+header {
+	background-color: #0F3460;
+	/* 深い青 */
+	padding: 20px;
+	text-align: center;
+	color: #FFCC00;
+	/* 黄色アクセント */
+	font-size: 24px;
+}
+
+/* ボタン */
+button {
+	background-color: #FFCC00;
+	background-color: #f0e68c;
+	color: #1A1A2E;
+	border: 2px solid #1A1A2E;
+	/*	padding: 10px 20px;*/
+	margin: 10px 0;
+	cursor: pointer;
+	font-size: 16px;
+	border-radius: 5px;
+	transition: background-color 0.3s ease;
+}
+
+
+button:hover {
+	background-color: #FFA500;
+	/* 濃いオレンジ色でアニメーション */
+}
+
+
+.table-container {
+/*	height: 90%;*/
+    max-height: 500px;  /* コンテナの高さを制限 */
+    position: relative;
+    overflow: hidden;   /* これは必要です */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 1;
+}
+
+tbody {
+    display: block;
+    overflow-y: auto;
+    max-height: calc(500px - 30px);  /* table-containerの高さからヘッダーの高さを引いた値 */
+    
+    /* スクロールバー非表示 */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+tbody::-webkit-scrollbar {
+    display: none;
+}
+
+thead,
+tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+/* カードデザイン (メニュー表示用) */
+.card {
+	background-color: #0F3460;
+	border: 1px solid #FFCC00;
+	padding: 15px;
+	margin: 15px 0;
+	border-radius: 10px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.card h3 {
+	color: #FFCC00;
+	margin-bottom: 10px;
+}
+
+.card p {
+	color: #EAEAEA;
+}
+
+/* フッター */
+footer {
+	margin-top: 20px;
+	text-align: center;
+	font-size: 14px;
+	color: #888;
+}
+
+.margin {
+	padding: 5px;
+	margin: 5px;
+}

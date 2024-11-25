@@ -1,0 +1,50 @@
+@charset "UTF-8";
+
+.table-container {
+	max-height: 4000px;
+	/* テーブルの最大高さを設定 */
+	overflow: hidden;
+	position: relative;
+/*	  padding: 50px;*/
+/*	  margin: 50px;*/
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+thead {
+	position: sticky;
+	top: 0;
+	background-color: white;
+	/* ヘッダーの背景色 */
+	z-index: 1;
+	/* ヘッダーを前面に表示 */
+}
+
+tbody {
+	display: block;
+	overflow-x: none;
+	overflow-y: auto;
+	max-height: calc(400px - 50px);
+	/* テーブル全体の高さからヘッダーの高さを引いた値 */
+	/* スクロールバーを非表示にする */
+	-ms-overflow-style: none;
+	/* IE, Edge 対応 */
+	scrollbar-width: none;
+	/* Firefox 対応 */
+}
+
+/* Chrome, Safari 対応 */
+tbody::-webkit-scrollbar {
+	display: none;
+}
+
+/* テーブルのレイアウトが崩れないようにする */
+thead,
+tbody tr {
+	display: table;
+	width: 100%;
+	table-layout: fixed;
+}

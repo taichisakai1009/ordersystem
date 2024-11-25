@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>注文開始画面</title>
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+	<link th:href="@{/css/title.css}" rel="stylesheet">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+
+<body>
+	<h1 class="shop-name" style="text-align: center;">Moon Palace</h1>
+	<div class="center">
+		<form id="orderStart" action="/order/choice" method="POST">
+			<button type="submit" id="orderStartButton" class="start-button" name="show">注文を始める</button>
+		</form>
+	</div>
+</body>
+
+</html>
