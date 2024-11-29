@@ -13,9 +13,19 @@
 <body>
 	<h1 class="shop-name" style="text-align: center;">Moon Palace</h1>
 	<div class="center">
+		<div class="margin">
 		<form id="orderStart" action="/order/choice" method="POST">
 			<button type="submit" id="orderStartButton" class="start-button" name="show">注文を始める</button>
 		</form>
+		</div>
+		<div class="margin">
+			<form id="loginform" th:action="@{/login/login}" method="POST">
+				<button type="submit" id="login" name="show">ログイン</button>
+			</form>
+		</div>
+<!--		<form id="showChoiceView" action="/clerks/choice" method="POST">-->
+<!--			<button type="submit" id="showChoiceViewButton" class="start-button" name="show">店員選択</button>-->
+<!--		</form>-->
 	</div>
 </body>
 

@@ -39,7 +39,7 @@ public class ChoiceService {
 		this.ordersRepository = ordersRepository;
 		this.orderDetailsRepository = orderDetailsRepository;
 	}
-	
+
 
 	// 注文番号に応じて商品名を検索
 	public String getDishName(int orderNumber) {
@@ -66,7 +66,7 @@ public class ChoiceService {
 	}
 	
 	// 利用客IDから注文履歴を復元
-	public void restOrderRecord (Integer passengerId, HttpSession session) {
+	public OrderRecordDtoList restOrderRecord (Integer passengerId, HttpSession session) {
 		OrderRecordDtoList orderRecordDtoList = new OrderRecordDtoList();
 		List<OrderRecordDto> orderRecordList = new ArrayList<>();
 		Integer totalPrice = 0;
@@ -95,6 +95,8 @@ public class ChoiceService {
 		orderRecordDtoList.setOrderRecordDtoList(orderRecordList);
 		orderRecordDtoList.setTotalPrice(totalPrice);
 		session.setAttribute("orderRecord", orderRecordDtoList);
+		
+		return orderRecordDtoList;
 	}
 
 	// 注文リストを取得

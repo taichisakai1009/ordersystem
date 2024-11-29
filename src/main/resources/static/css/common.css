@@ -22,10 +22,15 @@ a {
 	--shadow-color: rgba(34, 51, 102, 0.2);
 }
 
+html {
+	height: 100%;
+}
+
 body {
 	background-color: var(--background);
 	font-family: "Courier New", monospace;
 	color: var(--dark-blue);
+	height: 100%;
 	margin: 0;
 	padding: 0;
 	min-height: 100vh;
@@ -134,6 +139,20 @@ tbody tr {
 
 .card p {
 	color: #EAEAEA;
+}
+
+.container {
+	width: 90%;
+	height: 90%;
+	margin: 10px auto;
+	padding: 20px;
+/*	background-color: #f0f0f0;*/
+/*	border: 1px solid #ccc;*/
+/*	border-radius: 10px;*/
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 }
 
 /* フッター */

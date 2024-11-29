@@ -44,7 +44,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 				.formLogin(login -> login
 						.loginPage("/login/login?show=true").permitAll()
 						.loginProcessingUrl("/in") // 入力フォームのth:actionと分けなければいけない
-						.defaultSuccessUrl("/clerks/login", true)
+						.defaultSuccessUrl("/clerks/choice?show", true)
 						.failureUrl("/login/login?show=true&error=true") // ログイン失敗後のリダイレクト先
 						.usernameParameter("clerkNumber")
 						.passwordParameter("password")

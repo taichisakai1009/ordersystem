@@ -11,25 +11,46 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.demo.Dto.OrderRecordDto;
 import com.example.demo.Dto.OrderRecordDtoList;
+import com.example.demo.Entity.PassengersEntity;
 import com.example.demo.Repository.OrderDetailsRepository;
+import com.example.demo.Repository.PassengersRepository;
+import com.example.demo.service.ChoiceService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/clerks")
 public class ClerksController {
-
+	
+	@Autowired
+	ChoiceService choiceService;
+	
 	@Autowired
 	OrderDetailsRepository orderDetailsRepository;
 	
+	@Autowired
+	PassengersRepository passengersRepository;
+	
+	// 利用客選択画面表示
+	@RequestMapping(path = "/choice", params="show")
+	public String showChoiceView(Model model) {
+		
+		List<PassengersEntity> passengersList = passengersRepository.findAll();
+		model.addAttribute("passengersList",passengersList);
+		System.out.println("passengersList："+passengersList);
+		
+		return "clerks/choicePassensior";
+	}
+
 	// 店員画面表示
 	@RequestMapping(path = "/delivered", params="show")
-	public String show(Model model, HttpSession session) {
-		OrderRecordDtoList orderRecordDtoList = (OrderRecordDtoList) session.getAttribute("orderRecord");
+	public String show(Integer passengerId, Model model, HttpSession session) {
+		OrderRecordDtoList orderRecordDtoList = choiceService.restOrderRecord(passengerId,session);
 		model.addAttribute("orderRecordDtoList", orderRecordDtoList);
 		System.out.println("店員画面ボタン");
-		return "clerks/clerks";
+		return "clerks/setDelivered";
 	}
+
 	// 未配達フラグオフ
 	@RequestMapping(path = "/delivered", params="delivered")
 	public String delivered(Integer id, Model model, HttpSession session) {
@@ -48,7 +69,7 @@ public class ClerksController {
 			session.setAttribute("orderRecord", orderRecordDtoList);
 			model.addAttribute("orderRecordDtoList", orderRecordDtoList);
 		}
-		return "clerks/clerks";
+		return "clerks/setDelivered";
 	}
 
 	// ログイン成功時のメソッド
@@ -64,7 +85,7 @@ public class ClerksController {
 		System.out.println("authentication："+authentication);
 		OrderRecordDtoList orderRecordDtoList = (OrderRecordDtoList) session.getAttribute("orderRecord");
 		model.addAttribute("orderRecordDtoList", orderRecordDtoList);
-		return "clerks/clerks";
+		return "clerks/setDelivered";
 	}
 
 	// メニューに戻る

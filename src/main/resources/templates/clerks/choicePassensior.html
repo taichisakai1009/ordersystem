@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>利用客を選択してください</title>
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+
+		<table border="1">
+			<thead>
+				<tr>
+					<th>利用客ID</th>
+					<th>座席番号</th>
+					<th>食事開始時間</th>
+					<th>食事終了時間</th>
+					<th>選択ボタン</th>
+				</tr>
+			</thead>
+			<tbody th:if="${passengersList != null}">
+				<tr th:each="passenger, iter : ${passengersList}" style="text-align: center;">
+					<td th:text="${passenger.passengerId}"></td>
+					<td th:text="${passenger.seatNumber}"></td>
+					<td th:text="${passenger.startTime}"></td>
+					<td th:if="${passenger.eatingFlg}" th:text="食事中"></td>
+					<td th:if="${!passenger.eatingFlg}" th:text="${passenger.endTime}"></td>
+					<td>
+						<form id="selectPassenger" th:action="@{/clerks/delivered}">
+							<input type="hidden" id="passengerId" name="passengerId" th:value="${passenger.passengerId}">
+							<button type="submit" id="showClerkWorkPage" name="show">選択</button>
+						</form>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+
+</body>
+
+</html>

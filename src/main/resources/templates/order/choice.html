@@ -46,11 +46,11 @@
 		<div id="modalContainer" class="order-modal"></div> <!--ここにモーダルをinnerHTMLで追加-->
 
 	</form>
-	<div class="margin">
-		<form id="backToTitle" th:action="@{/clerks/delivered}" method="POST">
-			<button type="submit" id="login" name="show">店員画面</button>
-		</form>
-	</div>
+<!--	<div class="margin">-->
+<!--		<form id="backToTitle" th:action="@{/clerks/delivered}" method="POST">-->
+<!--			<button type="submit" id="login" name="show">店員画面</button>-->
+<!--		</form>-->
+<!--	</div>-->
 	<form id="backToTitle" th:action="@{/title/title}" method="POST">
 		<button type="submit" id="back-title" name="title">◀◀◀</button>
 	</form>
@@ -63,11 +63,7 @@
 		<button sec:authorize="hasRole('Regular')" class="admin-button">
 			管理者専用ボタン
 		</button>
-		<div class="margin">
-			<form id="loginform" th:action="@{/login/login}" method="POST">
-				<button type="submit" id="login" name="show">ログイン</button>
-			</form>
-		</div>
+
 	</div>
 	<script th:src="@{/js/order.js}"></script>
 </body>
