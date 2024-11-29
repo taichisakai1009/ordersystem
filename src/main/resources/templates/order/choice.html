@@ -11,10 +11,12 @@
 
 <body>
 	<form id="orderForm" th:action="@{/order/choice}" method="POST">
-
+		<div class="margin">
+			ようこそ、<span sec:authentication="name" style="text-align: center;">ユーザー名</span>さん
+		</div>
 		<div id="order-number-form">
 			ここに注文番号を記入
-			<input type="number" id="digit0" oninput="moveFocus(0)" class="no-spinner">
+			<input type="number" id="digit0" oninput="moveFocus(0)" class="no-spinner" autofocus>
 			<input type="number" id="digit1" oninput="moveFocus(1)" class="no-spinner">
 			<input type="number" id="digit2" oninput="moveFocus(2)" class="no-spinner">
 			<input type="number" id="digit3" oninput="moveFocus(3)" class="no-spinner">
@@ -44,10 +46,29 @@
 		<div id="modalContainer" class="order-modal"></div> <!--ここにモーダルをinnerHTMLで追加-->
 
 	</form>
+	<div class="margin">
+		<form id="backToTitle" th:action="@{/clerks/delivered}" method="POST">
+			<button type="submit" id="login" name="show">店員画面</button>
+		</form>
+	</div>
 	<form id="backToTitle" th:action="@{/title/title}" method="POST">
 		<button type="submit" id="back-title" name="title">◀◀◀</button>
-		<button type="submit" id="test" name="test">テスト画面</button>
 	</form>
+	<div style="display:flex;">
+		<div class="margin">
+			<form id="loginform" sec:authorize="isAuthenticated()" th:action="@{/logout}" method="POST">
+				<button type="submit" id="login" name="show">ログアウト</button>
+			</form>
+		</div>
+		<button sec:authorize="hasRole('Regular')" class="admin-button">
+			管理者専用ボタン
+		</button>
+		<div class="margin">
+			<form id="loginform" th:action="@{/login/login}" method="POST">
+				<button type="submit" id="login" name="show">ログイン</button>
+			</form>
+		</div>
+	</div>
 	<script th:src="@{/js/order.js}"></script>
 </body>
 

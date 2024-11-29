@@ -56,6 +56,17 @@ button {
 	transition: background-color 0.3s ease;
 }
 
+.disabled-button {
+	background-color: #cccccc;
+	/* 灰色にして無効を表現 */
+	cursor: not-allowed;
+	/* カーソルを変更して無効を表現 */
+}
+
+.disabled-button:hover {
+	background-color: #cccccc;
+	/* 灰色にして無効を表現 */
+}
 
 button:hover {
 	background-color: #FFA500;
@@ -64,43 +75,46 @@ button:hover {
 
 
 .table-container {
-/*	height: 90%;*/
-    max-height: 500px;  /* コンテナの高さを制限 */
-    position: relative;
-    overflow: hidden;   /* これは必要です */
+	/*	height: 90%;*/
+	max-height: 300px;
+	/* コンテナの高さを制限 */
+	position: relative;
+	overflow: hidden;
+	margin: 50px;
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
+	width: 100%;
+	border-collapse: collapse;
 }
 
 thead {
-    position: sticky;
-    top: 0;
-    background-color: white;
-    z-index: 1;
+	position: sticky;
+	top: 0;
+	background-color: white;
+	z-index: 1;
 }
 
 tbody {
-    display: block;
-    overflow-y: auto;
-    max-height: calc(500px - 30px);  /* table-containerの高さからヘッダーの高さを引いた値 */
-    
-    /* スクロールバー非表示 */
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+	display: block;
+	overflow-y: auto;
+	max-height: calc(300px - 30px);
+	/* table-containerの高さからヘッダーの高さを引いた値 */
+
+	/* スクロールバー非表示 */
+	-ms-overflow-style: none;
+	scrollbar-width: none;
 }
 
 tbody::-webkit-scrollbar {
-    display: none;
+	display: none;
 }
 
 thead,
 tbody tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
+	display: table;
+	width: 100%;
+	table-layout: fixed;
 }
 
 /* カードデザイン (メニュー表示用) */

@@ -60,7 +60,7 @@ public class ChoiceController {
 
 	// モデルCartに入れるとき呼び出す。
 	@RequestMapping(path = "/choice", params = "insert")
-	public void addToCart(Integer orderNumber, Integer quantity,Model model, HttpSession session) {
+	public void addToCart(Integer orderNumber, Integer quantity, Model model, HttpSession session) {
 		System.out.println("Cartに追加。orderNumber：" + orderNumber + "、quantity：" + quantity);
 		choiceService.addToCart(orderNumber, quantity, session);
 	}
@@ -73,7 +73,7 @@ public class ChoiceController {
 		response.put("orderDetailList", orderDetailsDtoList);
 		return ResponseEntity.ok(response);
 	}
-	
+
 	// 注文履歴を表示する。
 	@RequestMapping(path = "/choice", params = "viewRecord")
 	public ResponseEntity<Map<String, Object>> viewRecord(Model model, HttpSession session) {
@@ -82,7 +82,7 @@ public class ChoiceController {
 		response.put("orderRecordList", orderRecordDtoList);
 		return ResponseEntity.ok(response);
 	}
-	
+
 	// 注文の一部を取り消す。
 	@RequestMapping(path = "/choice", params = "remove")
 	public ResponseEntity<String> removeFromCart(String dishName, Model model,
@@ -100,16 +100,17 @@ public class ChoiceController {
 	// 注文内容を送信する。
 	@RequestMapping(path = "/choice", params = "order")
 	@ResponseBody
-	public ResponseEntity<List<OrderDetailsDto>> orderDishes(@RequestBody List<OrderDetailsDto> orderDetails, Model model, HttpSession session) {
+	public ResponseEntity<List<OrderDetailsDto>> orderDishes(@RequestBody List<OrderDetailsDto> orderDetails,
+			Model model, HttpSession session) {
 		System.out.println("注文内容：" + orderDetails);
 
 		// 注文テーブルに登録（初回の場合利用者テーブルも登録）
-		OrdersEntity ordersEntity = choiceService.insertOrders(01);
-		
+		OrdersEntity ordersEntity = choiceService.insertOrders(06);
+
 		// 注文テーブルからIDと注文時間を取得
 		Integer orderId = ordersEntity.getOrderId();
 		LocalTime orderTime = ordersEntity.getOrderTime();
-		
+
 		// 注文時間のフォーマットを"HH:mm:ss"に設定 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss"); // フォーマットされた時刻を取得
 		String formattedTime = orderTime.format(formatter);
@@ -135,7 +136,6 @@ public class ChoiceController {
 			orderRecordDto.setQuantity(order.getQuantity());
 			orderRecordDto.setOrderTime(formattedTime);
 			orderRecordDto.setUndeliveredFlg(true);
-			System.out.println(orderRecordDto.isUndeliveredFlg());
 			OrderRecordList.add(orderRecordDto);
 
 			totalPrice += order.getPrice() * order.getQuantity(); // 合計金額の計算
@@ -144,11 +144,11 @@ public class ChoiceController {
 		orderRecordDtoList.setOrderRecordDtoList(OrderRecordList);
 		// 注文履歴に追加
 		session.setAttribute("orderRecord", orderRecordDtoList);
-		System.out.println("注文情報："+orderRecordDtoList);
+		System.out.println("注文情報：" + orderRecordDtoList);
 
 		// 注文リストを削除
 		session.removeAttribute("Cart");
 		return ResponseEntity.ok(orderDetails);
 	}
-	
+
 }

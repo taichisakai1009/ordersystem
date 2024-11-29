@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class ChoiceService {
 		this.ordersRepository = ordersRepository;
 		this.orderDetailsRepository = orderDetailsRepository;
 	}
+	
 
 	// 注文番号に応じて商品名を検索
 	public String getDishName(int orderNumber) {
@@ -61,6 +63,38 @@ public class ChoiceService {
 	public List<PassengersEntity> getPassengerBySeatNumberAndEatingFlg(Integer seatNumber, boolean eatingFlg) {
 		return passengersRepository.findBySeatNumberAndEatingFlg(seatNumber, eatingFlg).stream() // Optional を Stream に変換
 				.toList(); // Stream を List に変換 (Java 16+);
+	}
+	
+	// 利用客IDから注文履歴を復元
+	public void restOrderRecord (Integer passengerId, HttpSession session) {
+		OrderRecordDtoList orderRecordDtoList = new OrderRecordDtoList();
+		List<OrderRecordDto> orderRecordList = new ArrayList<>();
+		Integer totalPrice = 0;
+        // DateTimeFormatterを使ってフォーマットを指定
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+		
+		List<OrdersEntity> OrdersList = ordersRepository.findByPassengerId(passengerId);
+		for(OrdersEntity Order : OrdersList) {
+			LocalTime orderTime = Order.getOrderTime();
+			List<OrderDetailsEntity> OrderDetailsList = orderDetailsRepository.findByOrderId(Order.getOrderId());
+			for(OrderDetailsEntity OrderDetails : OrderDetailsList) {
+				OrderRecordDto orderRecordDto = new OrderRecordDto();
+				orderRecordDto.setId(OrderDetails.getId());
+				String dishName = OrderDetails.getDishName();
+				Integer quantity = OrderDetails.getQuantity();
+				orderRecordDto.setDishName(dishName);
+				orderRecordDto.setQuantity(quantity);
+				orderRecordDto.setUndeliveredFlg(OrderDetails.isUndeliveredFlg());
+				orderRecordDto.setOrderTime(orderTime.format(formatter));
+				orderRecordList.add(orderRecordDto);
+				Integer price = dishesRepository.findByDishName(dishName).getPrice();
+				totalPrice += price * quantity;
+			}
+		}
+		
+		orderRecordDtoList.setOrderRecordDtoList(orderRecordList);
+		orderRecordDtoList.setTotalPrice(totalPrice);
+		session.setAttribute("orderRecord", orderRecordDtoList);
 	}
 
 	// 注文リストを取得
@@ -148,9 +182,9 @@ public class ChoiceService {
 	public PassengersEntity registPassenger(Integer seatNumber) {
 		// 全利用客情報を取得
 		List<PassengersEntity> passengers = getPassengerBySeatNumberAndEatingFlg(seatNumber, true);
-
 		// 指定座席に食事中の人がいない時だけ利用者登録
 		if (passengers.isEmpty()) {
+			
 			LocalTime currentTime = LocalTime.now();
 			PassengersEntity passengersEntity = new PassengersEntity();
 			passengersEntity.setSeatNumber(seatNumber);
@@ -188,6 +222,7 @@ public class ChoiceService {
 		orderDetailsEntity.setDishId(getDishId(order.getOrderNumber()));
 		orderDetailsEntity.setDishName(getDishName(order.getOrderNumber()));
 		orderDetailsEntity.setQuantity(order.getQuantity());
+		orderDetailsEntity.setUndeliveredFlg(true);
 		OrderDetailsEntity saveEntity = orderDetailsRepository.saveAndFlush(orderDetailsEntity);
 		return saveEntity.getId();
 	}

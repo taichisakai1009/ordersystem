@@ -1,7 +1,28 @@
+// Enterキーによるフォーム送信を制御
+document.addEventListener("keydown", function(event) {
+	console.log("キー入力");
+	const orderCount = document.getElementById("orderCount");
+	const orderCountDisplay = window.getComputedStyle(orderCount).display;
+	const addToCartButton = document.getElementById("addToCart"); // 対象ボタンを取得
+
+	if (event.key === "Enter" && orderCountDisplay === "none") {
+		event.preventDefault(); // デフォルトのフォーム送信を防止
+		console.log("Enterキーによるフォーム送信を阻止");
+	} else if (event.key === "Enter" && orderCountDisplay === "block") {
+		event.preventDefault(); // デフォルトのフォーム送信を防止
+		console.log("Enterキーが押され、カートに入れるボタンをクリックします。");
+		// 特定のボタンをプログラムからクリック
+		addToCartButton.click();
+	}
+});
+
 // 4つの数字入力フォームの動き
 function moveFocus(current) {
 	const currentInput = document.getElementById(`digit${current}`);
 	const nextInput = document.getElementById(`digit${current + 1}`);
+
+    // e, -, ., + を受け付けない
+    currentInput.value = currentInput.value.replace(/[^0-9]/g, "");
 
 	// 入力が完了し次のフィールドにフォーカス
 	if (currentInput.value.length === 1 && nextInput) {
