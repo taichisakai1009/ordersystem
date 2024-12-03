@@ -9,6 +9,9 @@
 
 <body>
 	<div class="container">
+		<div class="margin">
+			店員番号：<span sec:authentication="name" style="text-align: center;">ユーザー名</span>
+		</div>
 
 		<table border="1">
 			<thead>
@@ -29,16 +32,22 @@
 					<td th:if="${!passenger.eatingFlg}" th:text="${passenger.endTime}"></td>
 					<td>
 						<form id="selectPassenger" th:action="@{/clerks/delivered}">
-							<input type="hidden" id="passengerId" name="passengerId" th:value="${passenger.passengerId}">
+							<input type="hidden" id="passengerId" name="passengerId"
+								th:value="${passenger.passengerId}">
 							<button type="submit" id="showClerkWorkPage" name="show">選択</button>
 						</form>
 					</td>
 				</tr>
 			</tbody>
 		</table>
+		<form id="loginform" sec:authorize="isAuthenticated()" th:action="@{/logout}" method="POST">
+			<button type="submit" id="login" name="show">ログアウト</button>
+		</form>
+		<form id="backToTheTitle" th:action="@{/}" method="POST">
+			<button type="submit" id="TitleBackButton">タイトルに戻る</button>
+		</form>
 	</div>
-
-
+	<script th:src="@{/js/Clerks.js}"></script>
 </body>
 
 </html>

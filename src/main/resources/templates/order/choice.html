@@ -11,9 +11,7 @@
 
 <body>
 	<form id="orderForm" th:action="@{/order/choice}" method="POST">
-		<div class="margin">
-			ようこそ、<span sec:authentication="name" style="text-align: center;">ユーザー名</span>さん
-		</div>
+
 		<div id="order-number-form">
 			ここに注文番号を記入
 			<input type="number" id="digit0" oninput="moveFocus(0)" class="no-spinner" autofocus>

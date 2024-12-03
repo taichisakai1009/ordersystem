@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>テスト画面</title>
+	<title>配達調整</title>
 	<link th:href="@{/css/test.css}" rel="stylesheet">
 	<link th:href="@{/css/common.css}" rel="stylesheet">
 
@@ -30,22 +30,24 @@
 					<td th:text="${order.quantity}" style="text-align: center;"></td>
 					<td th:text="${order.orderTime}" style="text-align: center;"></td>
 					<td th:if="${order.undeliveredFlg}" th:text="未配達" style="text-align: center;"></td>
+					<!--					これがないとページを更新したとき消える-->
 					<td th:if="${!order.undeliveredFlg}" th:text="配達済み" style="text-align: center;"></td>
 					<td style="text-align: center;">
-						<form id="deliverd" th:action="@{/clerks/delivered}" method="POST">
-							<input type="hidden" id="orderid" name="id" th:value="${order.id}">
-							<button type="submit" id="delivered" name="delivered" th:disabled="${!order.undeliveredFlg}"
-								th:classappend="${!order.undeliveredFlg} ? 'disabled-button' : ''" />
-							配達済みにする</button>
-						</form>
+						<input type="hidden" id="orderid" class="orderid" name="id" th:value="${order.id}">
+						<button type="button" id="deliveredButton" class="deliveredButton"
+							th:disabled="${!order.undeliveredFlg}"
+							th:classappend="${!order.undeliveredFlg} ? 'disabled-button' : ''" />
+						配達済みにする</button>
 					</td>
+				</tr>
 			</tbody>
 		</table>
 	</div>
 
-	<form id="backToMenu" th:action="@{/clerks/choice}" method="POST">
+	<form id="backToMenu" th:action="@{/clerks/choice?show}" method="POST">
 		<button type="submit" id="back-menu" name="show">◀◀◀</button>
 	</form>
+	<script th:src="@{/js/Clerks.js}"></script>
 </body>
 
 </html>

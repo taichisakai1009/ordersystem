@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
 	<meta charset="UTF-8">
@@ -11,21 +11,26 @@
 </head>
 
 <body>
-	<h1 class="shop-name" style="text-align: center;">Moon Palace</h1>
-	<div class="center">
+	<div class="container">
 		<div class="margin">
-		<form id="orderStart" action="/order/choice" method="POST">
-			<button type="submit" id="orderStartButton" class="start-button" name="show">注文を始める</button>
-		</form>
+			ログイン中　店員番号：<span sec:authentication="name" style="text-align: center;"></span>
 		</div>
-		<div class="margin">
-			<form id="loginform" th:action="@{/login/login}" method="POST">
-				<button type="submit" id="login" name="show">ログイン</button>
-			</form>
+		<h1 class="shop-name" style="text-align: center;">Moon Palace</h1>
+		<div class="center">
+			<div class="margin">
+				<form id="orderStart" action="/order/choice" method="POST">
+					<button type="submit" id="orderStartButton" class="start-button" name="show">注文を始める</button>
+				</form>
+			</div>
 		</div>
-<!--		<form id="showChoiceView" action="/clerks/choice" method="POST">-->
-<!--			<button type="submit" id="showChoiceViewButton" class="start-button" name="show">店員選択</button>-->
-<!--		</form>-->
+		<div class="link-button">
+			<div class="margin" sec:authorize="!isAuthenticated()">
+				<a href="/login/login?show">店員の方はこちら</a>
+			</div>
+			<div class="margin" sec:authorize="isAuthenticated()">
+				<a href="/clerks/choice?show">選択画面へ</a>
+			</div>
+		</div>
 	</div>
 </body>
 

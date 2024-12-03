@@ -21,8 +21,8 @@ function moveFocus(current) {
 	const currentInput = document.getElementById(`digit${current}`);
 	const nextInput = document.getElementById(`digit${current + 1}`);
 
-    // e, -, ., + を受け付けない
-    currentInput.value = currentInput.value.replace(/[^0-9]/g, "");
+	// e, -, ., + を受け付けない
+	currentInput.value = currentInput.value.replace(/[^0-9]/g, "");
 
 	// 入力が完了し次のフィールドにフォーカス
 	if (currentInput.value.length === 1 && nextInput) {
@@ -224,6 +224,7 @@ viewRecordButton.addEventListener('click', () => {
 						<th>商品名</th>
 						<th>数量</th>
 						<th>注文時間</th>
+						<th>お届け状況</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -232,6 +233,9 @@ viewRecordButton.addEventListener('click', () => {
 						<td>${Record.dishName}</td>
 						<td style="text-align: center;">${Record.quantity}</td>
 						<td style="text-align: center;">${Record.orderTime}</td>
+						<td style="text-align: center;">
+						 ${Record.undeliveredFlg ? '未配達' : '配達済み'}
+						 </td>
 					</tr>
 					`).join('')}
 				</tbody>

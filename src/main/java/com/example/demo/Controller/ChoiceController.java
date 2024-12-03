@@ -105,7 +105,7 @@ public class ChoiceController {
 		System.out.println("注文内容：" + orderDetails);
 
 		// 注文テーブルに登録（初回の場合利用者テーブルも登録）
-		OrdersEntity ordersEntity = choiceService.insertOrders(06);
+		OrdersEntity ordersEntity = choiceService.insertOrders(14,session);
 
 		// 注文テーブルからIDと注文時間を取得
 		Integer orderId = ordersEntity.getOrderId();

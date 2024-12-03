@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class OrderRecordDto {
 	
-	// 識別ID
+	// orders(注文テーブル)のID
 	private Integer id;
 
 	// 商品名

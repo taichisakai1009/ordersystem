@@ -52,6 +52,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 				.logout(logout -> logout // ログアウト
 						.logoutUrl("/logout") // ログアウトのURL
 						.logoutSuccessUrl("/login/login?logout=true") // ログアウト成功後のリダイレクト先
+//						.addLogoutHandler(customLogoutHandler()) // カスタムログアウトハンドラを追加
 						.invalidateHttpSession(true) // セッションの無効化
 						.deleteCookies("JSESSIONID") // Cookieの削除
 						)
@@ -68,5 +69,10 @@ public class SecurityConfig implements WebMvcConfigurer {
 
 		return http.build();
 	}
+	
+//    @Bean
+//    public LogoutHandler customLogoutHandler() {
+//        return new CustomLogoutHandler();
+//    }
 
 }

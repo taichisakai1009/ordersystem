@@ -38,9 +38,8 @@ public class LoginController {
 	// ログアウト成功
 	@RequestMapping(path = "/login", params = "logout")
 	public String logout(HttpSession session) {
-		choiceService.restOrderRecord(1, session);
-		System.out.println("ログアウト");
-		return "order/choice";
+//		choiceService.restOrderRecord(1, session);
+		return "title/title";
 	}
 
 	// 注文画面に戻る

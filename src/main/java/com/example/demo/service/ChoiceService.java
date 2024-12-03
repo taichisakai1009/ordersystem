@@ -65,7 +65,7 @@ public class ChoiceService {
 				.toList(); // Stream を List に変換 (Java 16+);
 	}
 	
-	// 利用客IDから注文履歴を復元
+	// 利用客IDから注文履歴を取得
 	public OrderRecordDtoList restOrderRecord (Integer passengerId, HttpSession session) {
 		OrderRecordDtoList orderRecordDtoList = new OrderRecordDtoList();
 		List<OrderRecordDto> orderRecordList = new ArrayList<>();
@@ -181,7 +181,7 @@ public class ChoiceService {
 	}
 
 	// 座席番号から利用客テーブルの検索または登録を行う。
-	public PassengersEntity registPassenger(Integer seatNumber) {
+	public PassengersEntity registPassenger(Integer seatNumber,HttpSession session) {
 		// 全利用客情報を取得
 		List<PassengersEntity> passengers = getPassengerBySeatNumberAndEatingFlg(seatNumber, true);
 		// 指定座席に食事中の人がいない時だけ利用者登録
@@ -193,6 +193,10 @@ public class ChoiceService {
 			passengersEntity.setStartTime(currentTime);
 			passengersEntity.setEatingFlg(true);
 			passengersRepository.saveAndFlush(passengersEntity);
+			Integer passengerId = passengersEntity.getPassengerId();
+			System.out.println("passengerId："+passengerId);
+			session.setAttribute("passengerId", passengerId);
+
 			return passengersEntity;
 			
 		} else if (passengers.size() == 1) {
@@ -203,12 +207,12 @@ public class ChoiceService {
 	}
 
 	// 座席番号で注文テーブルに登録
-	public OrdersEntity insertOrders(Integer seatNumber) {
+	public OrdersEntity insertOrders(Integer seatNumber,HttpSession session) {
 		LocalTime currentTime = LocalTime.now();
 		// 注文テーブルに追加
 		OrdersEntity ordersEntity = new OrdersEntity();
 		// 初回の場合、利用者登録も行う
-		ordersEntity.setPassengerId(registPassenger(seatNumber).getPassengerId());
+		ordersEntity.setPassengerId(registPassenger(seatNumber,session).getPassengerId());
 		ordersEntity.setSeatNumber(seatNumber);
 		ordersEntity.setOrderTime(currentTime);
 		ordersEntity.setUndeliveredFlg(true);

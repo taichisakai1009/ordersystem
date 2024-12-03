@@ -8,15 +8,26 @@
 
 .center {
 	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	margin-top: 230px;
+	/* 画面中央よりやや下に配置 */
+}
+
+
+
+.link-button {
+	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 100vh;
-	/*	 ビューポートの高さに合わせて全体を中央揃えにする */
+	margin-top: 200px;
 }
 
 .start-button {
+	width: 230px;
+	height: 80px;
 	padding: 10px 20px;
-	font-size: 16px;
+	font-size: 30px;
 	cursor: pointer;
-/*	color: red;*/
 }
