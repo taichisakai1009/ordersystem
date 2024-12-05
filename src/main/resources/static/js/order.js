@@ -1,3 +1,7 @@
+// CSRFトークンを取得
+const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
 // Enterキーによるフォーム送信を制御
 document.addEventListener("keydown", function(event) {
 	console.log("キー入力");
@@ -178,15 +182,136 @@ function removeOrder(button, dishName) {
 const modal = document.querySelector('.order-modal');
 const modalOverLay = document.querySelector('.modal-overlay');
 const modalContainer = document.getElementById('modalContainer');
-const viewCartButton = document.querySelector('.js-modal-button');
-const viewRecordButton = document.querySelector('.view-record-button');
+const viewCartButton = document.querySelector('.js-modal-button'); // 「注文に進む」ボタン
+const viewRecordButton = document.querySelector('.view-record-button'); // 注文履歴表示ボタン
+const restaurantBillButton = document.querySelector('.restaurant-bill-button'); // お会計ボタン
+
+
+restaurantBillButton.addEventListener('click', () => {
+
+	fetch('/order/choice?viewRecord=true', {
+		method: 'GET',
+		headers: {
+			'Accept': 'application/json',
+			[csrfHeader]: csrfToken // CSRFトークンをヘッダーに追加
+		}
+	})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('注文履歴の取得に失敗しました');
+			}
+			return response.json();
+		})
+		.then(data => {
+			// データ構造を確認
+			console.log("受け取ったデータ:", data);
+
+			// orderRecordから直接データを取得
+			const orderRecord = data.orderRecordList || [];
+
+			// データが空である場合の処理
+			if (!data || !orderRecord || orderRecord.length === 0) {
+				console.log("注文履歴が空です");
+				// 必要に応じて、ここでユーザーに通知する処理を追加
+				alert("注文内容を送信してください");
+				return;
+			}
+
+			// モーダル内HTMLの生成
+			const modalContent = `
+<div class="modal-content">
+	<div class="modal-order">
+		<button type="button" class="close-modal" onclick="closeModal()">×</button>
+		<div id="orderFrom">
+			<h2 class="margin">お会計</h2>
+				<div class="table-container">
+			<table border="1">
+				<thead>
+					<tr>
+						<th>商品名</th>
+						<th>値段</th>
+						<th>数量</th>
+					</tr>
+				</thead>
+				<tbody>
+					${orderRecord.orderRecordDtoList.map(Record => `
+					<tr>
+						<td>${Record.dishName}</td>
+						<td style="text-align: center;">${Record.price}</td>
+						<td style="text-align: center;">${Record.quantity}</td>
+					</tr>
+					`).join('')}
+				</tbody>
+			</table>
+				</div>
+			<div class="total-price" style="margin-top: 15px;">
+				<strong>合計金額: ¥ ${orderRecord.totalPrice}</strong>
+			</div>
+			<button type="button" onclick="closeModal()">閉じる</button>
+			<button type="button" onclick="comfirmAndCheckout()">お会計</button>
+		</div>
+	</div>
+</div>
+		`;
+
+			modal.innerHTML = modalContent;
+			modal.style.display = 'block';
+			modalOverLay.style.display = 'block'
+
+		})
+		.catch(error => {
+			console.error('Error:', error);
+			alert('注文履歴の表示中にエラーが発生しました');
+		});
+});
+
+function checkout() {
+	const passengerId = document.getElementById('passengerId').value;
+	// URL に passengerId をクエリパラメータとして追加
+	const url = `/order/choice?title=true&passengerId=${encodeURIComponent(passengerId)}`;
+
+	// fetch API を使用してリクエスト送信
+	fetch(url, {
+		method: 'GET', // HTTPメソッドを指定
+		headers: {
+			'Accept': 'text/html', // HTMLレスポンスを受け取るため
+		}
+	})
+		.then(response => {
+			if (response.ok) {
+				window.location.href = "/title/title?title=true"; // リダイレクト先を指定
+				alert('お会計が完了しました。');
+				// 成功した場合、HTMLを受け取る
+				return response.text();
+			} else {
+				// エラー処理
+				throw new Error(`HTTPエラー: ${response.status}`);
+			}
+		})
+		.then(html => {
+			console.log("受信したHTML:", html);
+			// 必要に応じて HTML を DOM に挿入
+			//        document.querySelector('#contentArea').innerHTML = html;
+		})
+		.catch(error => {
+			console.error("エラーが発生しました:", error);
+		});
+}
+
+function comfirmAndCheckout() {
+	if (confirm("お会計に進みます。よろしいですか？")) {
+		checkout();
+	}
+}
+
 
 viewRecordButton.addEventListener('click', () => {
 
 	fetch('/order/choice?viewRecord=true', {
 		method: 'GET',
 		headers: {
-			'Accept': 'application/json'
+			'Accept': 'application/json',
+			[csrfHeader]: csrfToken // CSRFトークンをヘッダーに追加
 		}
 	})
 		.then(response => {
@@ -266,8 +391,9 @@ viewCartButton.addEventListener('click', () => {
 	fetch('/order/choice?viewCart=true', {
 		method: 'GET',
 		headers: {
-			'Accept': 'application/json'
-		}
+			'Accept': 'application/json',
+			[csrfHeader]: csrfToken // CSRFトークンをヘッダーに追加
+		},
 	})
 		.then(response => {
 			if (!response.ok) {
@@ -388,6 +514,8 @@ function submitOrders() {
 	// テーブルから全ての注文データを収集
 	const orders = [];
 	const rows = document.querySelectorAll('#orderFrom tbody tr');
+	const seatNumber = document.getElementById('seatNumber').value;
+	console.log("seatNumber：" + seatNumber);
 
 	rows.forEach(row => {
 		const dishName = row.querySelector('td:nth-child(1)').textContent;
@@ -402,14 +530,23 @@ function submitOrders() {
 			price: price
 		});
 	});
-	console.log(orders);
+
+	const requestBody = {
+		orderDetailsDtoList: orders,
+		seatNumber: parseInt(seatNumber)
+	};
+
+	const JSONrequestBody = JSON.stringify(requestBody);
+
+	console.log("JSONrequestBody：" + JSONrequestBody);
 	// 収集したデータをサーバーに送信
 	fetch('/order/choice?order=true', {
 		method: 'POST',
 		headers: {
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/json',
+			[csrfHeader]: csrfToken // CSRFトークンをヘッダーに追加
 		},
-		body: JSON.stringify(orders)
+		body: JSONrequestBody
 	})
 		.then(response => {
 			if (!response.ok) {
@@ -418,6 +555,7 @@ function submitOrders() {
 			return response.json();
 		})
 		.then(data => {
+			window.location.href = "/order/choice?model=true"; // モデル追加を行う
 			// 成功時の処理（例：モーダルを閉じる、成功メッセージを表示する等）
 			closeModal();
 			alert('注文が完了しました。');

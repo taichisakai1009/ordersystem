@@ -1,22 +1,13 @@
-package com.example.demo.Entity;
+package com.example.demo.Dto;
 
 import java.time.LocalTime;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
-@Entity
-@Table(name = "passengers")
-public class PassengersEntity {
-
+public class SeePassengersDto {
+	
 	// 利用客ID
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer passengerId;
 	
 	// 座席番号
@@ -33,4 +24,10 @@ public class PassengersEntity {
 	
 	// 食事中か食事後か
 	private boolean eatingFlg;
+	
+	// 注文件数
+	private Integer numberOrdered;
+	
+	// 未配達注文数
+	private Integer numberUndelivered;
 }

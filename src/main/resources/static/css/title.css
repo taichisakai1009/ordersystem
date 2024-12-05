@@ -12,10 +12,14 @@
 	align-items: center;
 	justify-content: flex-start;
 	margin-top: 230px;
-	/* 画面中央よりやや下に配置 */
 }
 
-
+.seatNumber {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+/*	margin-top: 200px;*/
+}
 
 .link-button {
 	display: flex;

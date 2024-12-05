@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.Dto.OrderDetailsDto;
+import com.example.demo.Dto.OrderDetailsDtoList;
 import com.example.demo.Dto.OrderRecordDto;
 import com.example.demo.Dto.OrderRecordDtoList;
 import com.example.demo.Entity.OrdersEntity;
+import com.example.demo.Entity.PassengersEntity;
 import com.example.demo.Repository.DishesRepository;
 import com.example.demo.Repository.OrderDetailsRepository;
 import com.example.demo.Repository.OrdersRepository;
@@ -34,20 +36,36 @@ public class ChoiceController {
 	private final OrdersRepository ordersRepository;
 	private final OrderDetailsRepository orderDetailsRepository;
 	private final ChoiceService choiceService;
+	private final TitleController titleController;
 
+	//	TitleController
 	ChoiceController(DishesRepository dishesRepository, PassengersRepository passengersRepository,
 			OrdersRepository ordersRepository, OrderDetailsRepository orderDetailsRepository,
-			ChoiceService choiceService) {
+			ChoiceService choiceService, TitleController titleController) {
 		this.dishesRepository = dishesRepository;
 		this.passengersRepository = passengersRepository;
 		this.ordersRepository = ordersRepository;
 		this.orderDetailsRepository = orderDetailsRepository;
 		this.choiceService = choiceService;
+		this.titleController = titleController;
 	}
+
+	// 座席番号をセッションから取得してモデル追加
 
 	// 注文画面の初期表示を行う。
 	@RequestMapping(path = "/choice", params = "show")
-	public String showChoiceView() {
+	public String showChoiceView(Integer seatNumber, Model model, HttpSession session) {
+		// 座席番号をモデル追加
+		session.setAttribute("seatNumber", seatNumber);
+		choiceService.addSeatNumber(model, session);
+		// 座席番号から注文履歴をセッションに設定
+		List<PassengersEntity> passengers = choiceService.getPassengerBySeatNumberAndEatingFlg(seatNumber, true);
+		if (passengers.size() == 1) {
+			Integer passengerId = passengers.get(0).getPassengerId();
+			session.setAttribute("passengerId", passengerId);
+			choiceService.addPassengerId(model, session);
+			choiceService.restOrderRecord(passengerId, session);
+		}
 		return "order/choice";
 	}
 
@@ -61,6 +79,8 @@ public class ChoiceController {
 	// モデルCartに入れるとき呼び出す。
 	@RequestMapping(path = "/choice", params = "insert")
 	public void addToCart(Integer orderNumber, Integer quantity, Model model, HttpSession session) {
+		choiceService.addSeatNumber(model, session);
+		//		choiceService.addPassengerId(model, session);
 		System.out.println("Cartに追加。orderNumber：" + orderNumber + "、quantity：" + quantity);
 		choiceService.addToCart(orderNumber, quantity, session);
 	}
@@ -100,12 +120,16 @@ public class ChoiceController {
 	// 注文内容を送信する。
 	@RequestMapping(path = "/choice", params = "order")
 	@ResponseBody
-	public ResponseEntity<List<OrderDetailsDto>> orderDishes(@RequestBody List<OrderDetailsDto> orderDetails,
+	public ResponseEntity<OrderDetailsDtoList> orderDishes(@RequestBody OrderDetailsDtoList orderDetails,
 			Model model, HttpSession session) {
+		// 注文詳細からリストと座席番号を分離
+		List<OrderDetailsDto> orderDetailsDtoList = orderDetails.getOrderDetailsDtoList();
+		Integer seatNumber = orderDetails.getSeatNumber();
+
 		System.out.println("注文内容：" + orderDetails);
 
 		// 注文テーブルに登録（初回の場合利用者テーブルも登録）
-		OrdersEntity ordersEntity = choiceService.insertOrders(14,session);
+		OrdersEntity ordersEntity = choiceService.insertOrders(seatNumber, model, session);
 
 		// 注文テーブルからIDと注文時間を取得
 		Integer orderId = ordersEntity.getOrderId();
@@ -123,7 +147,7 @@ public class ChoiceController {
 		Integer totalPrice = orderRecordDtoList.getTotalPrice();
 
 		// 注文内容ごとに処理
-		for (OrderDetailsDto order : orderDetails) {
+		for (OrderDetailsDto order : orderDetailsDtoList) {
 
 			// 注文詳細テーブルに挿入、外部キー制約により、注文テーブルのIDをセット
 			// 識別idを取得
@@ -132,7 +156,9 @@ public class ChoiceController {
 			// 注文リストに追加
 			OrderRecordDto orderRecordDto = new OrderRecordDto();
 			orderRecordDto.setId(id);
+			orderRecordDto.setOrderId(orderId);
 			orderRecordDto.setDishName(order.getDishName());
+			orderRecordDto.setPrice(order.getPrice());
 			orderRecordDto.setQuantity(order.getQuantity());
 			orderRecordDto.setOrderTime(formattedTime);
 			orderRecordDto.setUndeliveredFlg(true);
@@ -149,6 +175,22 @@ public class ChoiceController {
 		// 注文リストを削除
 		session.removeAttribute("Cart");
 		return ResponseEntity.ok(orderDetails);
+	}
+
+	// お会計
+	@RequestMapping(path = "/choice", params = "title")
+	public void restaurantBill(@RequestParam Integer passengerId, Model model, HttpSession session) {
+		choiceService.restaurantBill(passengerId);
+		session.removeAttribute("passengerId");
+		session.removeAttribute("orderRecord");
+		System.out.println("お会計passengerId：" + passengerId);
+	}
+
+	// fetchだとモデル追加をビューに反映できないのでwindow.location.hrefで呼び出す。
+	@RequestMapping(path = "/choice", params = "model")
+	public void addModel(Model model, HttpSession session) {
+		choiceService.addPassengerId(model, session);
+		choiceService.addSeatNumber(model, session);
 	}
 
 }

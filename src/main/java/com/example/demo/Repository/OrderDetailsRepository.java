@@ -15,6 +15,8 @@ public interface OrderDetailsRepository extends JpaRepository<OrderDetailsEntity
 	
 	List<OrderDetailsEntity> findByOrderId(Integer orderId);
 	
+	List<OrderDetailsEntity> findByOrderIdAndUndeliveredFlg(Integer orderId, boolean undeliveredFlg);
+	
 	@Modifying
 	@Transactional
     @Query("UPDATE OrderDetailsEntity o SET o.undeliveredFlg = false WHERE o.id = :id")

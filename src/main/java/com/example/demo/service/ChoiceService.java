@@ -40,7 +40,6 @@ public class ChoiceService {
 		this.orderDetailsRepository = orderDetailsRepository;
 	}
 
-
 	// 注文番号に応じて商品名を検索
 	public String getDishName(int orderNumber) {
 		return dishesRepository.findByOrderNumber(orderNumber)
@@ -58,44 +57,69 @@ public class ChoiceService {
 		return dishesRepository.findByOrderNumber(orderNumber)
 				.map(DishesEntity::getPrice).orElse(null);
 	}
-	
+
 	// 座席番号と食事中フラグから利用者を検索
 	public List<PassengersEntity> getPassengerBySeatNumberAndEatingFlg(Integer seatNumber, boolean eatingFlg) {
 		return passengersRepository.findBySeatNumberAndEatingFlg(seatNumber, eatingFlg).stream() // Optional を Stream に変換
 				.toList(); // Stream を List に変換 (Java 16+);
 	}
+
+	// 座席番号をセッションから取得してモデル追加
+	public Integer addSeatNumber(Model model, HttpSession session) {
+		Integer seatNumber = (Integer) session.getAttribute("seatNumber");
+		if (seatNumber != null) {
+			model.addAttribute("seatNumber", seatNumber);
+		} else {
+			model.addAttribute("seatNumber", "未設定");
+		}
+		return seatNumber;
+	}
 	
+	// 座席番号をセッションから取得してモデル追加
+	public Integer addPassengerId(Model model, HttpSession session) {
+		Integer passengerId = (Integer) session.getAttribute("passengerId");
+		System.out.println("セッションpassengerId："+passengerId);
+		if (passengerId != null) {
+			model.addAttribute("passengerId", passengerId);
+		} else {
+			model.addAttribute("passengerId", "未設定");
+		}
+		return passengerId;
+	}
+
 	// 利用客IDから注文履歴を取得
-	public OrderRecordDtoList restOrderRecord (Integer passengerId, HttpSession session) {
+	public OrderRecordDtoList restOrderRecord(Integer passengerId, HttpSession session) {
 		OrderRecordDtoList orderRecordDtoList = new OrderRecordDtoList();
 		List<OrderRecordDto> orderRecordList = new ArrayList<>();
 		Integer totalPrice = 0;
-        // DateTimeFormatterを使ってフォーマットを指定
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-		
+		// DateTimeFormatterを使ってフォーマットを指定
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
 		List<OrdersEntity> OrdersList = ordersRepository.findByPassengerId(passengerId);
-		for(OrdersEntity Order : OrdersList) {
+		for (OrdersEntity Order : OrdersList) {
 			LocalTime orderTime = Order.getOrderTime();
 			List<OrderDetailsEntity> OrderDetailsList = orderDetailsRepository.findByOrderId(Order.getOrderId());
-			for(OrderDetailsEntity OrderDetails : OrderDetailsList) {
+			for (OrderDetailsEntity OrderDetails : OrderDetailsList) {
 				OrderRecordDto orderRecordDto = new OrderRecordDto();
 				orderRecordDto.setId(OrderDetails.getId());
+				orderRecordDto.setOrderId(Order.getOrderId());
 				String dishName = OrderDetails.getDishName();
 				Integer quantity = OrderDetails.getQuantity();
 				orderRecordDto.setDishName(dishName);
+				Integer price = dishesRepository.findByDishName(dishName).getPrice();
+				orderRecordDto.setPrice(price);
 				orderRecordDto.setQuantity(quantity);
 				orderRecordDto.setUndeliveredFlg(OrderDetails.isUndeliveredFlg());
 				orderRecordDto.setOrderTime(orderTime.format(formatter));
 				orderRecordList.add(orderRecordDto);
-				Integer price = dishesRepository.findByDishName(dishName).getPrice();
 				totalPrice += price * quantity;
 			}
 		}
-		
+
 		orderRecordDtoList.setOrderRecordDtoList(orderRecordList);
 		orderRecordDtoList.setTotalPrice(totalPrice);
 		session.setAttribute("orderRecord", orderRecordDtoList);
-		
+
 		return orderRecordDtoList;
 	}
 
@@ -181,38 +205,42 @@ public class ChoiceService {
 	}
 
 	// 座席番号から利用客テーブルの検索または登録を行う。
-	public PassengersEntity registPassenger(Integer seatNumber,HttpSession session) {
+	public PassengersEntity registPassenger(Integer seatNumber, Model model, HttpSession session) {
 		// 全利用客情報を取得
 		List<PassengersEntity> passengers = getPassengerBySeatNumberAndEatingFlg(seatNumber, true);
 		// 指定座席に食事中の人がいない時だけ利用者登録
 		if (passengers.isEmpty()) {
-			
+
 			LocalTime currentTime = LocalTime.now();
 			PassengersEntity passengersEntity = new PassengersEntity();
 			passengersEntity.setSeatNumber(seatNumber);
 			passengersEntity.setStartTime(currentTime);
+			passengersEntity.setUndeliveredFlg(true);
 			passengersEntity.setEatingFlg(true);
 			passengersRepository.saveAndFlush(passengersEntity);
 			Integer passengerId = passengersEntity.getPassengerId();
-			System.out.println("passengerId："+passengerId);
+			System.out.println("利用者登録passengerId：" + passengerId);
 			session.setAttribute("passengerId", passengerId);
+			addPassengerId(model, session);
 
 			return passengersEntity;
-			
+
 		} else if (passengers.size() == 1) {
-			return passengers.get(0); // 食事中の人がいたらその人を取得
+			PassengersEntity passenger = passengers.get(0);
+			passenger.setUndeliveredFlg(true);
+			return passenger; // 食事中の人がいたらその人を取得
 		} else {
 			throw new MultiplePassengersException("指定された座席に複数の利用者がいます。");
 		}
 	}
 
 	// 座席番号で注文テーブルに登録
-	public OrdersEntity insertOrders(Integer seatNumber,HttpSession session) {
+	public OrdersEntity insertOrders(Integer seatNumber, Model model, HttpSession session) {
 		LocalTime currentTime = LocalTime.now();
 		// 注文テーブルに追加
 		OrdersEntity ordersEntity = new OrdersEntity();
 		// 初回の場合、利用者登録も行う
-		ordersEntity.setPassengerId(registPassenger(seatNumber,session).getPassengerId());
+		ordersEntity.setPassengerId(registPassenger(seatNumber, model, session).getPassengerId());
 		ordersEntity.setSeatNumber(seatNumber);
 		ordersEntity.setOrderTime(currentTime);
 		ordersEntity.setUndeliveredFlg(true);
@@ -246,5 +274,14 @@ public class ChoiceService {
 			System.out.println("初注文：" + orderRecordDtoList);
 		}
 		return orderRecordDtoList;
+	}
+	
+	// お会計の際食事中フラグをオフ,食事終了時間を挿入
+	public void restaurantBill(Integer passengerId) {
+		LocalTime currentTime = LocalTime.now();
+		PassengersEntity passenger = passengersRepository.findByPassengerId(passengerId);
+		passenger.setEndTime(currentTime);
+		passenger.setEatingFlg(false);
+		passengersRepository.saveAndFlush(passenger);		
 	}
 }

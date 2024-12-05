@@ -6,5 +6,8 @@ import lombok.Data;
 
 @Data
 public class OrderDetailsDtoList {
-	private List<OrderDetailsDto> OrderDetailsDtoList;
+	// 注文詳細DTOリスト
+	private List<OrderDetailsDto> orderDetailsDtoList;
+	// 座席番号
+	private Integer seatNumber;
 }

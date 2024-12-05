@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
 	<meta charset="UTF-8">
+	<!-- HTMLにCSRFトークンを埋め込む -->
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 	<title>配達調整</title>
 	<link th:href="@{/css/test.css}" rel="stylesheet">
 	<link th:href="@{/css/common.css}" rel="stylesheet">
@@ -10,44 +13,47 @@
 </head>
 
 <body>
+	<div class="container">
+		<div class="table-container">
+			<table border="1">
+				<thead>
+					<tr>
+						<th>商品名</th>
+						<th>数量</th>
+						<th>配達状況</th>
+						<th>配達済ボタン</th>
+					</tr>
+				</thead>
+				<tbody th:if="${orderDetails != null}">
+					<tr th:each="order, iter : ${orderDetails}">
+						<td th:text="${order.dishName}"></td>
+						<td th:text="${order.quantity}" style="text-align: center;"></td>
+						<td th:if="${order.undeliveredFlg}" th:text="未配達" style="text-align: center;"></td>
+						<!--					これがないとページを更新したとき消える-->
+						<td th:if="${!order.undeliveredFlg}" th:text="配達済み" style="text-align: center;"></td>
+						<td style="text-align: center;">
+							<input type="hidden" id="orderDetailsId" class="orderDetailsId" name="orderDetailsId"
+								th:value="${order.id}">
+							<input type="hidden" id="orderId" class="orderId" name="orderId"
+								th:value="${order.orderId}">
+							<input type="hidden" id="setDeliverd-passengerId" name="passengerId"
+								th:value="${passengerId}">
+							<button type="button" id="deliveredButton" class="deliveredButton"
+								th:disabled="${!order.undeliveredFlg || !eatingFlg}"
+								th:classappend="${!order.undeliveredFlg || !eatingFlg} ? 'disabled-button' : ''" />
+							配達済みにする</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 
-	<div class="table-container">
-		<table border="1">
-			<thead>
-				<tr>
-					<th>注文ID</th>
-					<th>商品名</th>
-					<th>数量</th>
-					<th>注文時間</th>
-					<th>配達状況</th>
-					<th>配達済ボタン</th>
-				</tr>
-			</thead>
-			<tbody th:if="${orderRecordDtoList != null}">
-				<tr th:each="order, iter : ${orderRecordDtoList.orderRecordDtoList}">
-					<td th:text="${order.id}" style="text-align: center;"></td>
-					<td th:text="${order.dishName}"></td>
-					<td th:text="${order.quantity}" style="text-align: center;"></td>
-					<td th:text="${order.orderTime}" style="text-align: center;"></td>
-					<td th:if="${order.undeliveredFlg}" th:text="未配達" style="text-align: center;"></td>
-					<!--					これがないとページを更新したとき消える-->
-					<td th:if="${!order.undeliveredFlg}" th:text="配達済み" style="text-align: center;"></td>
-					<td style="text-align: center;">
-						<input type="hidden" id="orderid" class="orderid" name="id" th:value="${order.id}">
-						<button type="button" id="deliveredButton" class="deliveredButton"
-							th:disabled="${!order.undeliveredFlg}"
-							th:classappend="${!order.undeliveredFlg} ? 'disabled-button' : ''" />
-						配達済みにする</button>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<form id="backToMenu" th:action="@{/clerks/delivered}" method="POST">
+			<input type="hidden" id="backToMenu-passengerId" name="passengerId" th:value="${passengerId}">
+			<button type="submit" id="back-orders" name="show">◀◀◀</button>
+		</form>
+		<script th:src="@{/js/Clerks.js}"></script>
 	</div>
-
-	<form id="backToMenu" th:action="@{/clerks/choice?show}" method="POST">
-		<button type="submit" id="back-menu" name="show">◀◀◀</button>
-	</form>
-	<script th:src="@{/js/Clerks.js}"></script>
 </body>
 
 </html>

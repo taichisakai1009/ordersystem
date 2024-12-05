@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<!-- HTMLにCSRFトークンを埋め込む -->
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+	<title>注文一覧</title>
+	<link th:href="@{/css/test.css}" rel="stylesheet">
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+
+</head>
+
+<body>
+	<div class="container">
+		<div class="table-container">
+			<table border="1">
+				<thead>
+					<tr>
+						<th>注文ID</th>
+						<th>注文時間</th>
+						<th>配達状況</th>
+						<th>選択ボタン</th>
+					</tr>
+				</thead>
+				<tbody th:if="${orders != null}">
+					<tr th:each="order, iter : ${orders}" style="text-align: center;">
+						<td th:text="${order.orderId}"></td>
+						<td th:text="${order.orderTime}"></td>
+						<td th:if="${order.undeliveredFlg}">未配達 [[${order.numberUndelivered}]]/[[${order.numberOrderDetails}]]</td>
+						<td th:if="${!order.undeliveredFlg}" th:text="お届け済み"></td>
+						<td>
+							<form id="choiceOrder" th:action="@{/clerks/delivered}">
+								<input type="hidden" id="orderId" name="orderId" th:value="${order.orderId}">
+								<input type="hidden" name="passengerId" th:value="${passengerId}">
+								<button type="submit" id="showSetDelivered" name="setPage">選択</button>
+							</form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<form id="backToMenu" th:action="@{/clerks/choice?show}" method="POST">
+			<button type="submit" id="back-menu" name="show">◀◀◀</button>
+		</form>
+	</div>
+</body>
+
+</html>

@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
 	<meta charset="UTF-8">
+	<!-- HTMLにCSRFトークンを埋め込む -->
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 	<title>利用客を選択してください</title>
 	<link th:href="@{/css/common.css}" rel="stylesheet">
 </head>
@@ -20,6 +23,7 @@
 					<th>座席番号</th>
 					<th>食事開始時間</th>
 					<th>食事終了時間</th>
+					<th>配達状況</th>
 					<th>選択ボタン</th>
 				</tr>
 			</thead>
@@ -30,6 +34,8 @@
 					<td th:text="${passenger.startTime}"></td>
 					<td th:if="${passenger.eatingFlg}" th:text="食事中"></td>
 					<td th:if="${!passenger.eatingFlg}" th:text="${passenger.endTime}"></td>
+					<td th:if="${passenger.undeliveredFlg}">未配達  [[${passenger.numberUndelivered}]]/[[${passenger.numberOrdered}]]</td>
+					<td th:if="${!passenger.undeliveredFlg}" th:text="お届け済み"></td>
 					<td>
 						<form id="selectPassenger" th:action="@{/clerks/delivered}">
 							<input type="hidden" id="passengerId" name="passengerId"

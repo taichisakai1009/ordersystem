@@ -5,11 +5,17 @@ import lombok.Data;
 @Data
 public class OrderRecordDto {
 	
-	// orders(注文テーブル)のID
+	// 注文詳細ID
 	private Integer id;
+	
+	// orders(注文テーブル)のID
+	private Integer orderId;
 
 	// 商品名
 	private String dishName;
+	
+	// 値段
+	private Integer price;
 
 	// 数量
 	private Integer quantity;

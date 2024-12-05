@@ -7,61 +7,70 @@
 	<link th:href="@{/css/common.css}" rel="stylesheet">
 	<link th:href="@{/css/choice.css}" rel="stylesheet">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<!-- HTMLにCSRFトークンを埋め込む -->
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 </head>
 
 <body>
-	<form id="orderForm" th:action="@{/order/choice}" method="POST">
+	<div class="container">
+		<form id="orderForm" th:action="@{/order/choice}" method="POST">
+			<p>座席番号: <span th:text="${seatNumber}"></span></p>
+			<p th:if="${passengerId}">利用者番号: <span th:text="${passengerId}"></span></p>
 
-		<div id="order-number-form">
-			ここに注文番号を記入
-			<input type="number" id="digit0" oninput="moveFocus(0)" class="no-spinner" autofocus>
-			<input type="number" id="digit1" oninput="moveFocus(1)" class="no-spinner">
-			<input type="number" id="digit2" oninput="moveFocus(2)" class="no-spinner">
-			<input type="number" id="digit3" oninput="moveFocus(3)" class="no-spinner">
-		</div>
-		<input type="hidden" id="orderNumber" name="orderNumber" value="0">
-		<input type="hidden" id="quantity" name="quantity" value="1">
-		<input type="hidden" id="price" name="price" value="0">
-
-		<p class="margin">料理名：<span id="dishName"></span></p>
-
-		<div class="number-input" style="display:flex;">
-			<div style="margin-top: 15px;">数量：</div>
-			<div id="orderCount" class="orderCount">
-				<button type="button" onclick="decrement()" aria-label="Decrement">◀</button>
-				<span class="number-value">1</span>
-				<button type="button" onclick="increment()" aria-label="Increment">▶</button>
-				<button type="submit" name="insert" id="addToCart" class="button"
-					onclick="askNotificationPermission()">カートに入れる</button>
+			<div id="order-number-form">
+				ここに注文番号を記入
+				<input type="number" id="digit0" oninput="moveFocus(0)" class="no-spinner" autofocus>
+				<input type="number" id="digit1" oninput="moveFocus(1)" class="no-spinner">
+				<input type="number" id="digit2" oninput="moveFocus(2)" class="no-spinner">
+				<input type="number" id="digit3" oninput="moveFocus(3)" class="no-spinner">
 			</div>
-		</div>
-		<div class="margin">
-			<button type="button" name="viewCart" id="viewCart" class="js-modal-button">注文に進む</button>
-			<button type="button" name="viewRecord" id="viewRecord" class="view-record-button">注文履歴を表示</button>
-		</div>
+			<input type="hidden" id="orderNumber" name="orderNumber" value="0">
+			<input type="hidden" id="quantity" name="quantity" value="1">
+			<input type="hidden" id="price" name="price" value="0">
+			<input type="hidden" id="seatNumber" name="seatNumber" th:value="${seatNumber}">
+			<input type="hidden" id="passengerId" name="passengerId" th:value="${passengerId}">
 
-		<div id="modalOverlay" class="modal-overlay"></div> <!--モーダル画面の背景-->
-		<div id="modalContainer" class="order-modal"></div> <!--ここにモーダルをinnerHTMLで追加-->
 
-	</form>
-<!--	<div class="margin">-->
-<!--		<form id="backToTitle" th:action="@{/clerks/delivered}" method="POST">-->
-<!--			<button type="submit" id="login" name="show">店員画面</button>-->
-<!--		</form>-->
-<!--	</div>-->
-	<form id="backToTitle" th:action="@{/title/title}" method="POST">
-		<button type="submit" id="back-title" name="title">◀◀◀</button>
-	</form>
-	<div style="display:flex;">
-		<div class="margin">
-			<form id="loginform" sec:authorize="isAuthenticated()" th:action="@{/logout}" method="POST">
-				<button type="submit" id="login" name="show">ログアウト</button>
-			</form>
+			<p class="margin">料理名：<span id="dishName"></span></p>
+
+			<div class="number-input" style="display:flex;">
+				<div style="margin-top: 15px;">数量：</div>
+				<div id="orderCount" class="orderCount">
+					<button type="button" onclick="decrement()" aria-label="Decrement">◀</button>
+					<span class="number-value">1</span>
+					<button type="button" onclick="increment()" aria-label="Increment">▶</button>
+					<button type="submit" name="insert" id="addToCart" class="button"
+						onclick="askNotificationPermission()">カートに入れる</button>
+				</div>
+			</div>
+			<div class="margin">
+				<button type="button" name="viewCart" id="viewCart" class="js-modal-button">注文に進む</button>
+				<button type="button" name="viewRecord" id="viewRecord" class="view-record-button">注文履歴を表示</button>
+			</div>
+			<div class="margin">
+				<button type="button" name="restaurant-bill-button" id="restaurant-bill-button"
+					class="restaurant-bill-button">お会計</button>
+			</div>
+			<div id="modalOverlay" class="modal-overlay"></div> <!--モーダル画面の背景-->
+			<div id="modalContainer" class="order-modal"></div> <!--ここにモーダルをinnerHTMLで追加-->
+
+		</form>
+
+		<form id="backToTitle" th:action="@{/title/title}" method="POST">
+			<button type="submit" id="back-title" name="title">◀◀◀</button>
+		</form>
+		<div style="display:flex;">
+			<div class="margin">
+				<form id="loginform" sec:authorize="isAuthenticated()" th:action="@{/logout}" method="POST">
+					<button type="submit" id="login" name="show">ログアウト</button>
+				</form>
+			</div>
+			<button sec:authorize="hasRole('Regular')" class="admin-button">
+				管理者専用ボタン
+			</button>
+
 		</div>
-		<button sec:authorize="hasRole('Regular')" class="admin-button">
-			管理者専用ボタン
-		</button>
-
 	</div>
 	<script th:src="@{/js/order.js}"></script>
 </body>
