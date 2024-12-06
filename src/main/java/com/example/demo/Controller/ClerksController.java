@@ -55,7 +55,11 @@ public class ClerksController {
 		List<PassengersEntity> passengers = passengersRepository.findAll();
 		List<SeePassengersDto> passengersList = clerksService.setSeePassengersDtoList(passengers);
 		
+		Integer passengerCount = passengersList.size();
+		
 		model.addAttribute("passengersList", passengersList);
+		model.addAttribute("passengerCount", passengerCount);
+
 		System.out.println("passengersList：" + passengersList);
 
 		return "clerks/choicePassensior";
@@ -148,7 +152,7 @@ public class ClerksController {
 		}
 		return ResponseEntity.ok(orderId);
 	}
-	
+
 	// 同じ注文IDの商品がすべて配達済みになったらフラグオフ。
 	@RequestMapping(path = "/delivered", params = "passenger")
 	@ResponseBody // Ajaxレスポンスを返すために追加

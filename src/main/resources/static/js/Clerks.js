@@ -16,8 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
 			const orderDetailsId = this.parentElement.querySelector('.orderDetailsId').value;
 			const orderId = this.parentElement.querySelector('.orderId').value;
 			const passengerId = document.getElementById('setDeliverd-passengerId').value;
-			
-			console.log();
 
 			// Fetch APIを使用してPOSTリクエスト
 			fetch('/clerks/delivered?delivered', {
@@ -99,3 +97,44 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	});
 });
+
+// 利用者一覧に表示フィルターをつける
+function filterTable() {
+	const filter = document.getElementById('filterOptions').value;
+	const rows = document.querySelectorAll('#passengersTableBody tr');
+
+	let counter = 0; // 利用客のカウント
+
+	rows.forEach(row => {
+		const eatingStatusCell = row.querySelector('td:nth-child(4)'); // 4列目の食事状況
+		const eatingStatusText = eatingStatusCell.textContent.trim(); // セルのテキストを取得
+		const deliveringStatusCell = row.querySelector('td:nth-child(5)'); // 5列目の配達状況
+		const deliveringStatusText = deliveringStatusCell.textContent.trim();
+
+		const eatingFlg = (eatingStatusText === "食事中"); // 食事中フラグ
+		const undeliveredFlg = (deliveringStatusText !== "お届け済み"); // 未配達フラグ
+
+		if (filter === 'all') {
+			row.style.display = ''; // すべて表示
+			++counter;
+		} else if (filter === 'eating') {
+			if (eatingFlg) {
+				++counter;
+				row.style.display = ''; // 行を表示
+			} else {
+				row.style.display = 'none'; // 行を非表示
+			}
+		} else if (filter === 'waiting') {
+			if (eatingFlg && undeliveredFlg) {
+				++counter;
+				row.style.display = ''; // 行を表示
+			} else {
+				row.style.display = 'none'; // 行を非表示
+			}
+		}
+	});
+	console.log("counter:" + counter);
+	document.getElementById('rowCount').textContent = "利用客数 ： "+counter+" 人";
+
+}
+

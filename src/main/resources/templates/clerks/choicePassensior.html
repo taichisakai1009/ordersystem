@@ -16,6 +16,16 @@
 			店員番号：<span sec:authentication="name" style="text-align: center;">ユーザー名</span>
 		</div>
 
+		<div style="text-align: right; margin-bottom: 10px;">
+			<label for="filterOptions">表示フィルター:</label>
+			<select id="filterOptions" onchange="filterTable()">
+				<option value="all">すべて表示</option>
+				<option value="eating">食事中の人のみ表示</option>
+				<option value="waiting">注文待ちの人のみ表示</option>
+			</select>
+		</div>
+		<span id="rowCount">利用客数 ： [[${passengerCount}]] 人</span>
+
 		<table border="1">
 			<thead>
 				<tr>
@@ -27,14 +37,15 @@
 					<th>選択ボタン</th>
 				</tr>
 			</thead>
-			<tbody th:if="${passengersList != null}">
+			<tbody id="passengersTableBody" th:if="${passengersList != null}">
 				<tr th:each="passenger, iter : ${passengersList}" style="text-align: center;">
 					<td th:text="${passenger.passengerId}"></td>
 					<td th:text="${passenger.seatNumber}"></td>
 					<td th:text="${passenger.startTime}"></td>
 					<td th:if="${passenger.eatingFlg}" th:text="食事中"></td>
 					<td th:if="${!passenger.eatingFlg}" th:text="${passenger.endTime}"></td>
-					<td th:if="${passenger.undeliveredFlg}">未配達  [[${passenger.numberUndelivered}]]/[[${passenger.numberOrdered}]]</td>
+					<td th:if="${passenger.undeliveredFlg}">未配達
+						[[${passenger.numberUndelivered}]]/[[${passenger.numberOrdered}]]</td>
 					<td th:if="${!passenger.undeliveredFlg}" th:text="お届け済み"></td>
 					<td>
 						<form id="selectPassenger" th:action="@{/clerks/delivered}">

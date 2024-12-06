@@ -66,14 +66,37 @@ async function fetchDishName() {
 	if (orderNumber) {
 		// fetch メソッドはすぐにネットワーク要求を開始しますが、その結果は非同期的に処理され、すぐには取得できません。
 		// なのでawaitをつけて取得できるまで待つ。
+//				try {
+//					const response = await fetch(`/order/choice?search&orderNumber=${orderNumber}`);
+//					const dishName = await response.text();
+//					document.getElementById("dishName").innerText = dishName;
+//					document.getElementById("orderCount").style.display = "none";
+//					// 商品があるときだけ数量入力フォームを活性化。
+//					if (dishName !== "") {
+//						document.getElementById("orderCount").style.display = "block";
+//					}
+//				} catch (error) {
+//					console.error('Fetch error:', error);
+//					document.getElementById("dishName").innerText = "エラーが発生しました";
+//				}
 		try {
 			const response = await fetch(`/order/choice?search&orderNumber=${orderNumber}`);
-			const dishName = await response.text();
-			document.getElementById("dishName").innerText = dishName;
-			document.getElementById("orderCount").style.display = "none";
-			// 商品があるときだけ数量入力フォームを活性化。
-			if (dishName !== "") {
-				document.getElementById("orderCount").style.display = "block";
+			if (response.ok) {
+				const data = await response.json();
+				console.log("dataJSON：" + JSON.stringify(data, null, 2));
+				const dishesEntity = data.dishesEntity; // dishesEntityを取り出す
+				const dishName = dishesEntity.dishName; // 料理名
+				const onSaleFlg = dishesEntity.onSaleFlg; // 販売中フラグ
+
+				document.getElementById("dishName").innerText = dishName;
+				document.getElementById("orderCount").style.display = "none";
+				// 商品があるときだけ数量入力フォームを活性化。
+				if (dishName && onSaleFlg) {
+					document.getElementById("orderCount").style.display = "block";
+					document.getElementById("dishName").style.color = "darkBlue";
+				} else if (!onSaleFlg){
+					document.getElementById("dishName").style.color = "red";
+				}
 			}
 		} catch (error) {
 			console.error('Fetch error:', error);

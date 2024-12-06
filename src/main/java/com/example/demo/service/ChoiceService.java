@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -40,6 +41,17 @@ public class ChoiceService {
 		this.orderDetailsRepository = orderDetailsRepository;
 	}
 
+	// 注文番号に応じて商品エンティティを検索
+	public DishesEntity getDishByOrderNumber(int orderNumber) {
+		Optional<DishesEntity> dish = dishesRepository.findByOrderNumber(orderNumber);
+		if (dish.isPresent()) {
+			return dish.get();
+		} else {
+			DishesEntity emptyDish = new DishesEntity();
+			return emptyDish;
+		}
+	}
+
 	// 注文番号に応じて商品名を検索
 	public String getDishName(int orderNumber) {
 		return dishesRepository.findByOrderNumber(orderNumber)
@@ -58,6 +70,12 @@ public class ChoiceService {
 				.map(DishesEntity::getPrice).orElse(null);
 	}
 
+	// 注文番号に応じて注文フラグを取得
+	public boolean getOnSaleFlg(int orderNumber) {
+		return dishesRepository.findByOrderNumber(orderNumber)
+				.map(DishesEntity::isOnSaleFlg).orElse(null);
+	}
+
 	// 座席番号と食事中フラグから利用者を検索
 	public List<PassengersEntity> getPassengerBySeatNumberAndEatingFlg(Integer seatNumber, boolean eatingFlg) {
 		return passengersRepository.findBySeatNumberAndEatingFlg(seatNumber, eatingFlg).stream() // Optional を Stream に変換
@@ -74,11 +92,11 @@ public class ChoiceService {
 		}
 		return seatNumber;
 	}
-	
+
 	// 座席番号をセッションから取得してモデル追加
 	public Integer addPassengerId(Model model, HttpSession session) {
 		Integer passengerId = (Integer) session.getAttribute("passengerId");
-		System.out.println("セッションpassengerId："+passengerId);
+		System.out.println("セッションpassengerId：" + passengerId);
 		if (passengerId != null) {
 			model.addAttribute("passengerId", passengerId);
 		} else {
@@ -106,7 +124,9 @@ public class ChoiceService {
 				String dishName = OrderDetails.getDishName();
 				Integer quantity = OrderDetails.getQuantity();
 				orderRecordDto.setDishName(dishName);
-				Integer price = dishesRepository.findByDishName(dishName).getPrice();
+				System.out.println("dishName："+dishName);
+				// 詳細テーブルには値段の欄がないので検索、すでに商品テーブルに存在しないとぬるぽ
+				Integer price = dishesRepository.findByDishName(dishName).getPrice();//.getPrice()がぬるぽで呼び出せない時がある。
 				orderRecordDto.setPrice(price);
 				orderRecordDto.setQuantity(quantity);
 				orderRecordDto.setUndeliveredFlg(OrderDetails.isUndeliveredFlg());
@@ -275,13 +295,13 @@ public class ChoiceService {
 		}
 		return orderRecordDtoList;
 	}
-	
+
 	// お会計の際食事中フラグをオフ,食事終了時間を挿入
 	public void restaurantBill(Integer passengerId) {
 		LocalTime currentTime = LocalTime.now();
 		PassengersEntity passenger = passengersRepository.findByPassengerId(passengerId);
 		passenger.setEndTime(currentTime);
 		passenger.setEatingFlg(false);
-		passengersRepository.saveAndFlush(passenger);		
+		passengersRepository.saveAndFlush(passenger);
 	}
 }

@@ -25,4 +25,7 @@ public class DishesEntity {
 	
 	// 値段
 	private Integer price;
+	
+	// 提供中フラグ
+	private boolean onSaleFlg;
 }
