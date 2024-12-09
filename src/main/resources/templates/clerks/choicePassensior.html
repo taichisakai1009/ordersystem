@@ -24,7 +24,7 @@
 				<option value="waiting">注文待ちの人のみ表示</option>
 			</select>
 		</div>
-		<span id="rowCount">利用客数 ： [[${passengerCount}]] 人</span>
+		<span id="rowCount">表示人数 ： [[${passengerCount}]] 人</span>
 
 		<table border="1">
 			<thead>
@@ -57,11 +57,17 @@
 				</tr>
 			</tbody>
 		</table>
-		<form id="loginform" sec:authorize="isAuthenticated()" th:action="@{/logout}" method="POST">
-			<button type="submit" id="login" name="show">ログアウト</button>
+<!--				<div style="text-align: right; margin-bottom: 10px; padding: 10px;">-->
+<!--					<button type="button">商品一覧</button>-->
+<!--				</div>-->
+		<form id="showDishesPage" th:action="@{/clerks/dishes}" method="POST">
+			<button type="submit" id="DishesPageButton">商品一覧</button>
 		</form>
 		<form id="backToTheTitle" th:action="@{/}" method="POST">
 			<button type="submit" id="TitleBackButton">タイトルに戻る</button>
+		</form>
+		<form id="loginform" sec:authorize="isAuthenticated()" th:action="@{/logout}" method="POST">
+			<button type="submit" id="login" name="show">ログアウト</button>
 		</form>
 	</div>
 	<script th:src="@{/js/Clerks.js}"></script>

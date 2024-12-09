@@ -66,41 +66,40 @@ async function fetchDishName() {
 	if (orderNumber) {
 		// fetch メソッドはすぐにネットワーク要求を開始しますが、その結果は非同期的に処理され、すぐには取得できません。
 		// なのでawaitをつけて取得できるまで待つ。
-//				try {
-//					const response = await fetch(`/order/choice?search&orderNumber=${orderNumber}`);
-//					const dishName = await response.text();
-//					document.getElementById("dishName").innerText = dishName;
-//					document.getElementById("orderCount").style.display = "none";
-//					// 商品があるときだけ数量入力フォームを活性化。
-//					if (dishName !== "") {
-//						document.getElementById("orderCount").style.display = "block";
-//					}
-//				} catch (error) {
-//					console.error('Fetch error:', error);
-//					document.getElementById("dishName").innerText = "エラーが発生しました";
-//				}
 		try {
 			const response = await fetch(`/order/choice?search&orderNumber=${orderNumber}`);
 			if (response.ok) {
 				const data = await response.json();
-				console.log("dataJSON：" + JSON.stringify(data, null, 2));
+//				console.log("dataJSON：" + JSON.stringify(data, null, 2));
 				const dishesEntity = data.dishesEntity; // dishesEntityを取り出す
 				const dishName = dishesEntity.dishName; // 料理名
+				const price = dishesEntity.price; // 料金
 				const onSaleFlg = dishesEntity.onSaleFlg; // 販売中フラグ
 
-				document.getElementById("dishName").innerText = dishName;
-				document.getElementById("orderCount").style.display = "none";
+				const dishNameElement = document.getElementById("dishName"); // 商品名
+				const notForSaleElement = document.getElementById("notForSale"); // 取り扱い停止中メッセージ
+				const orderCountElement = document.getElementById("orderCount"); // 数量調整メーター
+
+				dishNameElement.innerText = dishName + " " + price + "円";
+				dishNameElement.style.display = "none";
+				notForSaleElement.textContent = dishName + 'は、現在取り扱っておりません。';
+				notForSaleElement.style.display = "none";
+				orderCountElement.style.display = "none";
 				// 商品があるときだけ数量入力フォームを活性化。
-				if (dishName && onSaleFlg) {
-					document.getElementById("orderCount").style.display = "block";
-					document.getElementById("dishName").style.color = "darkBlue";
-				} else if (!onSaleFlg){
-					document.getElementById("dishName").style.color = "red";
-				}
+				if (dishName) {
+					if (onSaleFlg) {
+						dishNameElement.style.display = "block";
+						dishNameElement.style.color = "darkBlue";
+						orderCountElement.style.display = "block";
+					} else if (!onSaleFlg) {
+						notForSaleElement.style.display = "block";
+						notForSaleElement.style.color = "red";
+					}
+				} 
 			}
 		} catch (error) {
 			console.error('Fetch error:', error);
-			document.getElementById("dishName").innerText = "エラーが発生しました";
+			dishNameElement.innerText = "エラーが発生しました";
 		}
 	}
 }

@@ -8,6 +8,10 @@
 	display: none;
 }
 
+.notOnSale {
+	color: red;
+}
+
 /* モーダルのオーバーレイ（背景） */
 .modal-overlay {
 	display: none;

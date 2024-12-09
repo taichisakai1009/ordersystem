@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+	<title>商品一覧</title>
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+	<link th:href="@{/css/dishes.css}" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+
+		<div class="margin">
+			<a href="/clerks/choice?show">選択画面へ</a>
+		</div>
+
+		<table border="1" style="text-align: center;">
+			<thead>
+				<tr>
+					<td>商品名</td>
+					<td>注文番号</td>
+					<td>値段</td>
+					<td>提供</td>
+				</tr>
+			</thead>
+			<tbody th:if="${dishes != null}">
+				<tr th:each="dish, iter : ${dishes}" style="text-align: center;">
+					<td th:text="${dish.dishName}"></td>
+					<td th:text="${dish.orderNumber}"></td>
+					<td th:text="${dish.price}"></td>
+
+					<td>
+						<div class="switch-wrapper">
+<!--							<span class="statusLabel" th:text="${dish.onSaleFlg ? '提供中　' : '提供中止'}"></span>-->
+							<span id="onSale" class="statusLabel" th:if="${dish.onSaleFlg}">提供中　</span>
+							<span id="notOnSale" class="statusLabel" th:if="${!dish.onSaleFlg}">提供中止</span>
+
+
+							<label class="switch">
+								<input type="hidden" class="dishIdClass" th:value="${dish.dishId}">
+								<input type="checkbox" th:checked="${dish.onSaleFlg == true}" class="toggleButton">
+								<span class="slider round"></span>
+							</label>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+	</div>
+	<script th:src="@{/js/Clerks.js}"></script>
+</body>
+
+</html>

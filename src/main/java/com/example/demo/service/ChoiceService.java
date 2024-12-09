@@ -126,7 +126,7 @@ public class ChoiceService {
 				orderRecordDto.setDishName(dishName);
 				System.out.println("dishName："+dishName);
 				// 詳細テーブルには値段の欄がないので検索、すでに商品テーブルに存在しないとぬるぽ
-				Integer price = dishesRepository.findByDishName(dishName).getPrice();//.getPrice()がぬるぽで呼び出せない時がある。
+				Integer price = dishesRepository.findByDishName(dishName).getPrice();
 				orderRecordDto.setPrice(price);
 				orderRecordDto.setQuantity(quantity);
 				orderRecordDto.setUndeliveredFlg(OrderDetails.isUndeliveredFlg());

@@ -18,9 +18,11 @@ import com.example.demo.Dto.OrderRecordDto;
 import com.example.demo.Dto.OrderRecordDtoList;
 import com.example.demo.Dto.SeeOrdersDto;
 import com.example.demo.Dto.SeePassengersDto;
+import com.example.demo.Entity.DishesEntity;
 import com.example.demo.Entity.OrderDetailsEntity;
 import com.example.demo.Entity.OrdersEntity;
 import com.example.demo.Entity.PassengersEntity;
+import com.example.demo.Repository.DishesRepository;
 import com.example.demo.Repository.OrderDetailsRepository;
 import com.example.demo.Repository.OrdersRepository;
 import com.example.demo.Repository.PassengersRepository;
@@ -47,6 +49,9 @@ public class ClerksController {
 
 	@Autowired
 	PassengersRepository passengersRepository;
+	
+	@Autowired
+	DishesRepository dishesRepository;
 
 	// 利用客選択画面表示
 	@RequestMapping(path = "/choice", params = "show")
@@ -174,7 +179,25 @@ public class ClerksController {
 		}
 		return ResponseEntity.ok(passengerId);
 	}
-
+	
+	// 商品一覧画面
+	@RequestMapping(path = "/dishes")
+	public String dishes(Model model) {
+		List<DishesEntity> dishes = dishesRepository.findAll();
+		model.addAttribute("dishes", dishes);
+		return "clerks/dishes";
+	}
+	
+	//	トグルボタンで提供フラグを操作
+	@RequestMapping(path="/dishes", params="onSale")
+	@ResponseBody
+	public ResponseEntity<Void> changeSaleStatus(@RequestParam("dishId") Integer dishId) {
+	    DishesEntity dish = dishesRepository.findById(dishId).orElseThrow();
+	    dish.setOnSaleFlg(dish.isOnSaleFlg() == true ? false : true); // 状態を切り替える
+	    dishesRepository.save(dish);
+	    System.out.println(dish.getDishName()+"、提供フラグ："+dish.isOnSaleFlg());
+	    return ResponseEntity.ok().build();
+	}
 
 	// ログイン成功時のメソッド
 	@RequestMapping(path = "/login")

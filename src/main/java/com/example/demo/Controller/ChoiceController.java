@@ -71,20 +71,12 @@ public class ChoiceController {
 	}
 
 	// 入力した注文番号に応じて料理の検索をする。
-	//	@RequestMapping(path = "/choice", params = "search")
-	//	public ResponseEntity<String> findDishByOrderNumber(@RequestParam int orderNumber) {
-	//		String dishName = choiceService.getDishName(orderNumber);
-	//		return ResponseEntity.ok(dishName);// これに.getBody()を加えるとdishNameが取得できる。
-	//	}
-
-	// 入力した注文番号に応じて料理の検索をする。
 	@ResponseBody
 	@RequestMapping(path = "/choice", params = "search")
 	public ResponseEntity<Map<String, Object>> findDishByOrderNumber(@RequestParam int orderNumber) {
 		Map<String, Object> response = new HashMap<>();
 		DishesEntity dishesEntity = choiceService.getDishByOrderNumber(orderNumber);
 		response.put("dishesEntity", dishesEntity);
-		System.out.println("商品名："+dishesEntity.getDishName());
 		return ResponseEntity.ok(response);
 	}
 

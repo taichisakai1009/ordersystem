@@ -122,6 +122,14 @@ tbody tr {
 	table-layout: fixed;
 }
 
+/* テーブルの行が強調されるスタイル */
+tbody tr:hover {
+	background-color: #f0f8ff;
+	/* 強調する背景色 */
+	transition: background-color 0.3s;
+	/* スムーズな背景色の変化 */
+}
+
 /* カードデザイン (メニュー表示用) */
 .card {
 	background-color: #0F3460;
@@ -146,13 +154,13 @@ tbody tr {
 	height: 90%;
 	margin: 10px auto;
 	padding: 20px;
-/*	background-color: #f0f0f0;*/
-/*	border: 1px solid #ccc;*/
-/*	border-radius: 10px;*/
+	/*	background-color: #f0f0f0;*/
+	/*	border: 1px solid #ccc;*/
+	/*	border-radius: 10px;*/
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-/*	display: flex;*/
-/*	flex-direction: column;*/
-/*	justify-content: center;*/
+	/*	display: flex;*/
+	/*	flex-direction: column;*/
+	/*	justify-content: center;*/
 }
 
 /* フッター */

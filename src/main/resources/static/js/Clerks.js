@@ -133,8 +133,47 @@ function filterTable() {
 			}
 		}
 	});
-	console.log("counter:" + counter);
-	document.getElementById('rowCount').textContent = "利用客数 ： "+counter+" 人";
+	document.getElementById('rowCount').textContent = "表示人数 ： " + counter + " 人";
 
 }
+// 配達済みボタンをすべて取得
+const buttons = document.querySelectorAll('.toggleButton');
 
+buttons.forEach(buttons => {
+	buttons.addEventListener('click', function(event) {
+		const button = this;
+		// 対応する注文IDの取得
+		const dishId = this.parentElement.querySelector('.dishIdClass').value;
+
+		fetch(`/clerks/dishes?onSale=true&dishId=${dishId}`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				[csrfHeader]: csrfToken
+			}, // CSRFトークンをヘッダーに追加
+			body: `dishId=${dishId}`
+		})
+			.then(response => {
+				if (response.ok) {
+
+					// 状態に応じてラベルを更新する関数
+					console.log("button：" + button);
+					const statusLabel = button.closest('td').querySelector('.statusLabel');
+					//					const statusLabel = this.parentElement.querySelector('.statusLabel');
+					console.log("statusLabel：" + statusLabel);
+					if (button.checked) {
+						statusLabel.textContent = '提供中　';
+						statusLabel.style.color = "darkblue";
+					} else {
+						statusLabel.textContent = '提供中止';
+						statusLabel.style.color = "red";
+					}
+
+					//					location.reload(); // 状態変更後にページをリロード
+				} else {
+					alert('状態を変更できませんでした。');
+				}
+			});
+
+	});
+});
