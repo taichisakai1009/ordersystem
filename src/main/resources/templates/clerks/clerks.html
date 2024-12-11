@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+	<title>店員一覧</title>
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+		<div class="margin">
+			<a href="/clerks/choice?show">選択画面へ</a>
+		</div>
+		<table>
+			<thead>
+				<tr>
+					<th>店員番号</th>
+					<th>氏名</th>
+					<th>メールアドレス</th>
+					<th>連絡先</th>
+					<th>勤務開始日</th>
+					<th>権限</th>
+				</tr>
+			</thead>
+			<tbody th:if="${clerks != null}">
+				<tr th:each="clerk, iter : ${clerks}" style="text-align: center;">
+					<td th:text="${clerk.clerkNumber}"></td>
+					<td th:text="${clerk.name}"></td>
+					<td th:text="${clerk.mailAddress}"></td>
+					<td th:text="${clerk.tel}"></td>
+					<td th:text="${clerk.startDate}"></td>
+					<td th:if="${clerk.roleName == 'Regular'}">店員</td>
+					<td th:if="${clerk.roleName == 'Manager'}">店長</td>
+					<td th:if="${clerk.roleName == 'Admin'}">管理者</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+
+</html>

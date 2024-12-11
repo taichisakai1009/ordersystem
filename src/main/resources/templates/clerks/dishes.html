@@ -17,7 +17,17 @@
 			<a href="/clerks/choice?show">選択画面へ</a>
 		</div>
 
-		<table border="1" style="text-align: center;">
+		<div style="text-align: right; margin-bottom: 10px;">
+			<label for="onsaleFilterOptions">表示フィルター:</label>
+			<select id="onsaleFilterOptions" onchange="onSaleFilter()">
+				<option value="all">すべて表示</option>
+				<option value="onsale">提供中の料理のみ表示</option>
+				<option value="notonsale">提供中止の料理のみ表示</option>
+			</select>
+		</div>
+		<span id="dishesCount">表示品数 ： [[${dishesCount}]] 個</span>
+
+		<table border="1" id="dishesTableBody" style="text-align: center;">
 			<thead>
 				<tr>
 					<td>商品名</td>
@@ -34,7 +44,6 @@
 
 					<td>
 						<div class="switch-wrapper">
-<!--							<span class="statusLabel" th:text="${dish.onSaleFlg ? '提供中　' : '提供中止'}"></span>-->
 							<span id="onSale" class="statusLabel" th:if="${dish.onSaleFlg}">提供中　</span>
 							<span id="notOnSale" class="statusLabel" th:if="${!dish.onSaleFlg}">提供中止</span>
 
@@ -49,6 +58,19 @@
 				</tr>
 			</tbody>
 		</table>
+
+		<div style="text-align: left; margin-top: 10px;">
+<!--			<button class="range-button" data-range-start="1000" data-range-end="1999">1000〜1999</button>-->
+<!--			<button class="range-button" data-range-start="2000" data-range-end="2999">2000〜2999</button>-->
+<!--			<button class="range-button" data-range-start="3000" data-range-end="3999">3000〜3999</button>-->
+<!--			<button class="range-button" data-range-start="4000" data-range-end="4999">4000〜4999</button>-->
+<!--			<button class="range-button" data-range-start="1000" data-range-end="1999">1000〜1999</button>-->
+<!--			<button class="range-button" data-range-start="2000" data-range-end="2999">2000〜2999</button>-->
+<!--			<button class="range-button" data-range-start="3000" data-range-end="3999">3000〜3999</button>-->
+<!--			<div class="button-container">-->
+<!--				 静的に定義されたボタンも残せます（オプション） -->
+			</div>
+		</div>
 
 	</div>
 	<script th:src="@{/js/Clerks.js}"></script>

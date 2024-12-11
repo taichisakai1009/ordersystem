@@ -91,13 +91,19 @@ button:hover {
 table {
 	width: 100%;
 	border-collapse: collapse;
+	background-color: #fff666;
+	/* テーブル全体の背景色 */
 }
 
 thead {
 	position: sticky;
 	top: 0;
-	background-color: white;
+	/*	background-color: white;*/
 	z-index: 1;
+/*	background-color: #ffcc00;*/
+	/* ヘッダー行の背景色 */
+	color: #000;
+	/* ヘッダーの文字色 */
 }
 
 tbody {
@@ -109,6 +115,25 @@ tbody {
 	/* スクロールバー非表示 */
 	-ms-overflow-style: none;
 	scrollbar-width: none;
+}
+
+tbody tr:nth-child(odd) {
+	background-color: #fffacd;
+	/* 奇数行の背景色 */
+}
+
+tbody tr:nth-child(even) {
+	background-color: #fff8dc;
+	/* 偶数行の背景色 */
+}
+
+td,
+th {
+	border: 1px solid #ccc;
+	padding: 8px;
+	text-align: center;
+	color: #333;
+	/* 通常の文字色 */
 }
 
 tbody::-webkit-scrollbar {

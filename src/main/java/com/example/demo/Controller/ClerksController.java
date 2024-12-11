@@ -16,12 +16,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.Dto.OrderRecordDto;
 import com.example.demo.Dto.OrderRecordDtoList;
+import com.example.demo.Dto.SeeClerksDto;
 import com.example.demo.Dto.SeeOrdersDto;
 import com.example.demo.Dto.SeePassengersDto;
+import com.example.demo.Entity.ClerksEntity;
 import com.example.demo.Entity.DishesEntity;
 import com.example.demo.Entity.OrderDetailsEntity;
 import com.example.demo.Entity.OrdersEntity;
 import com.example.demo.Entity.PassengersEntity;
+import com.example.demo.Repository.ClerksRepository;
 import com.example.demo.Repository.DishesRepository;
 import com.example.demo.Repository.OrderDetailsRepository;
 import com.example.demo.Repository.OrdersRepository;
@@ -52,6 +55,9 @@ public class ClerksController {
 	
 	@Autowired
 	DishesRepository dishesRepository;
+	
+	@Autowired
+	ClerksRepository clerksRepository;
 
 	// 利用客選択画面表示
 	@RequestMapping(path = "/choice", params = "show")
@@ -184,7 +190,9 @@ public class ClerksController {
 	@RequestMapping(path = "/dishes")
 	public String dishes(Model model) {
 		List<DishesEntity> dishes = dishesRepository.findAll();
+		Integer dishesCount = dishes.size();
 		model.addAttribute("dishes", dishes);
+		model.addAttribute("dishesCount", dishesCount);
 		return "clerks/dishes";
 	}
 	
@@ -197,6 +205,15 @@ public class ClerksController {
 	    dishesRepository.save(dish);
 	    System.out.println(dish.getDishName()+"、提供フラグ："+dish.isOnSaleFlg());
 	    return ResponseEntity.ok().build();
+	}
+	
+	// 店員一覧画面表示
+	@RequestMapping(path="/clerks")
+	public String showClerks(Model model) {
+		List<ClerksEntity> clerksEntity = clerksRepository.findAll();
+		List<SeeClerksDto> clerks = clerksService.setSeeClerksDtoList(clerksEntity);
+		model.addAttribute("clerks", clerks);
+		return "clerks/clerks";
 	}
 
 	// ログイン成功時のメソッド

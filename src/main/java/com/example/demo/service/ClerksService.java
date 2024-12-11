@@ -6,8 +6,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.Dto.SeeClerksDto;
 import com.example.demo.Dto.SeeOrdersDto;
 import com.example.demo.Dto.SeePassengersDto;
+import com.example.demo.Entity.ClerksEntity;
 import com.example.demo.Entity.OrdersEntity;
 import com.example.demo.Entity.PassengersEntity;
 import com.example.demo.Repository.OrderDetailsRepository;
@@ -26,7 +28,7 @@ public class ClerksService {
 	@Autowired
 	PassengersRepository passengersRepository;
 
-	// エンティティを元にDtoにセット
+	// エンティティを元にDtoにセット List<PassengersEntity>→List<SeePassengersDto>
 	public List<SeePassengersDto> setSeePassengersDtoList(List<PassengersEntity> passengers) {
 		List<SeePassengersDto> seePassengersDtoList = new ArrayList<>();
 		for (PassengersEntity passengersEntity : passengers) {
@@ -47,7 +49,7 @@ public class ClerksService {
 		return seePassengersDtoList;
 	}
 
-	// エンティティを元にDtoにセット
+	// エンティティを元にDtoにセット List<OrdersEntity>→List<SeeOrdersDto>
 	public List<SeeOrdersDto> setSeeOrdersDtoList(List<OrdersEntity> orders) {
 		List<SeeOrdersDto> seeOrdersDtoList = new ArrayList<>();
 		for (OrdersEntity seeOrdersEntity : orders) {
@@ -60,10 +62,42 @@ public class ClerksService {
 			seeOrdersDto.setUndeliveredFlg(seeOrdersEntity.isUndeliveredFlg());
 			Integer numberOrderDetails = orderDetailsRepository.findByOrderId(orderId).size();
 			seeOrdersDto.setNumberOrderDetails(numberOrderDetails);
-			Integer numberUndelivered = orderDetailsRepository.findByOrderIdAndUndeliveredFlg(orderId,false).size();
+			Integer numberUndelivered = orderDetailsRepository.findByOrderIdAndUndeliveredFlg(orderId, false).size();
 			seeOrdersDto.setNumberUndelivered(numberUndelivered);
 			seeOrdersDtoList.add(seeOrdersDto);
 		}
 		return seeOrdersDtoList;
 	}
+
+	// エンティティを元にDtoにセット List<ClerksEntity>→List<SeeClerksDto>
+	public List<SeeClerksDto> setSeeClerksDtoList(List<ClerksEntity> clerks) {
+		List<SeeClerksDto> seeClerksDtoList = new ArrayList<>();
+		for (ClerksEntity seeClerksEntity : clerks) {
+			SeeClerksDto seeClerksDto = new SeeClerksDto();
+			seeClerksDto.setClerkId(null);
+			seeClerksDto.setName(seeClerksEntity.getName());
+			seeClerksDto.setClerkNumber(seeClerksEntity.getClerkNumber());
+			seeClerksDto.setPassword(seeClerksEntity.getPassword());
+			seeClerksDto.setMailAddress(seeClerksEntity.getMailAddress());
+			seeClerksDto.setTel(seeClerksEntity.getTel());
+			seeClerksDto.setStartDate(seeClerksEntity.getStartDate());
+			String roleName = seeClerksEntity.getRole().getName();
+			seeClerksDto.setRoleName(roleName);
+			seeClerksDtoList.add(seeClerksDto);
+		}
+		return seeClerksDtoList;
+	}
+// エンティティを元にDtoにセット List<DishesEntity>→List<SeeDishesDto>
+//	public List<SeeDishesDto> setSeeDishesDtoList(List<DishesEntity> dishes) {
+//		List<SeeDishesDto> seeDishesDtoList = new ArrayList<>();
+//		for (DishesEntity dish : dishes) {
+//			SeeDishesDto seeDishesDto = new SeeDishesDto();
+//			seeDishesDto.setDishId(dish.getDishId());
+//			seeDishesDto.setDishName(dish.getDishName());			
+//			seeDishesDto.setOrderNumber(dish.getOrderNumber());
+//			seeDishesDto.setPrice(dish.getPrice());
+//			seeDishesDto.setOnSaleFlg(dish.isOnSaleFlg());
+//		}
+//		return seeDishesDtoList;
+//	}
 }

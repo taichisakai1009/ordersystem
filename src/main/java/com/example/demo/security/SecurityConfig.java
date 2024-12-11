@@ -19,13 +19,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 // 通称「設定クラス」。
 public class SecurityConfig implements WebMvcConfigurer {
 
+//	@Autowired
+//	private CustomUserDetailsService customuserDetailsService;
+//	@Autowired
+//	private UserDetailsService userDetailsService;
 	@Autowired
-	private CustomUserDetailsService userDetailsService;
+	private ClerkDetailsService clerkDetailsService;
 
 	@Bean
 	public AuthenticationManager authManager(HttpSecurity http) throws Exception {
 		return http.getSharedObject(AuthenticationManagerBuilder.class)
-				.userDetailsService(userDetailsService)
+				.userDetailsService(clerkDetailsService)
 				.passwordEncoder(passwordEncoder())
 				.and()
 				.build();

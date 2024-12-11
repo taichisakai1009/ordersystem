@@ -134,8 +134,44 @@ function filterTable() {
 		}
 	});
 	document.getElementById('rowCount').textContent = "表示人数 ： " + counter + " 人";
-
 }
+
+// 商品一覧に表示フィルターをつける
+function onSaleFilter() {
+	const onsaleFilter = document.getElementById('onsaleFilterOptions').value;
+	const dishesRows = document.querySelectorAll('#dishesTableBody tbody tr');
+
+	let counter = 0; // 商品数のカウント
+
+	dishesRows.forEach(row => {
+		const onsaleStatusCell = row.querySelector('td:nth-child(4)'); // 4列目の提供状況
+		const onsaleStatusText = onsaleStatusCell.textContent.trim(); // セルのテキストを取得
+		const onSaleFlg = (onsaleStatusText === "提供中"); // 食事中フラグ
+		const notOnSaleFlg = (onsaleStatusText === "提供中止"); // 未配達フラグ
+
+		if (onsaleFilter === 'all') {
+			row.style.display = ''; // すべて表示
+			++counter;
+
+		} else if (onsaleFilter === 'onsale') {
+			if (onSaleFlg) {
+				++counter;
+				row.style.display = ''; // 行を表示
+			} else {
+				row.style.display = 'none'; // 行を非表示
+			}
+		} else if (onsaleFilter === 'notonsale') {
+			if (notOnSaleFlg) {
+				++counter;
+				row.style.display = ''; // 行を表示
+			} else {
+				row.style.display = 'none'; // 行を非表示
+			}
+		}
+	});
+	document.getElementById('dishesCount').textContent = "表示品数 ： " + counter + " 個";
+}
+
 // 配達済みボタンをすべて取得
 const buttons = document.querySelectorAll('.toggleButton');
 
@@ -156,11 +192,7 @@ buttons.forEach(buttons => {
 			.then(response => {
 				if (response.ok) {
 
-					// 状態に応じてラベルを更新する関数
-					console.log("button：" + button);
 					const statusLabel = button.closest('td').querySelector('.statusLabel');
-					//					const statusLabel = this.parentElement.querySelector('.statusLabel');
-					console.log("statusLabel：" + statusLabel);
 					if (button.checked) {
 						statusLabel.textContent = '提供中　';
 						statusLabel.style.color = "darkblue";
@@ -168,8 +200,6 @@ buttons.forEach(buttons => {
 						statusLabel.textContent = '提供中止';
 						statusLabel.style.color = "red";
 					}
-
-					//					location.reload(); // 状態変更後にページをリロード
 				} else {
 					alert('状態を変更できませんでした。');
 				}
@@ -177,3 +207,22 @@ buttons.forEach(buttons => {
 
 	});
 });
+
+// 動的にボタンを生成する関数
+//function generateRangeButtons(startRange, endRange, step) {
+//	const container = document.querySelector('.button-container') || document.body;
+//
+//	for (let i = startRange; i <= endRange; i += step) {
+//		const button = document.createElement('button');
+//		button.classList.add('range-button');
+//		button.dataset.rangeStart = i;
+//		button.dataset.rangeEnd = i + step - 1;
+//		button.textContent = `${i}〜${i + step - 1}`;
+//
+//		container.appendChild(button);
+//	}
+//}
+//
+//document.addEventListener('DOMContentLoaded', () => {
+//	generateRangeButtons(1000, 5000, 1000);
+//});

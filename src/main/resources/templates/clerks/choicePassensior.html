@@ -57,18 +57,23 @@
 				</tr>
 			</tbody>
 		</table>
-<!--				<div style="text-align: right; margin-bottom: 10px; padding: 10px;">-->
-<!--					<button type="button">商品一覧</button>-->
-<!--				</div>-->
-		<form id="showDishesPage" th:action="@{/clerks/dishes}" method="POST">
-			<button type="submit" id="DishesPageButton">商品一覧</button>
-		</form>
-		<form id="backToTheTitle" th:action="@{/}" method="POST">
-			<button type="submit" id="TitleBackButton">タイトルに戻る</button>
-		</form>
-		<form id="loginform" sec:authorize="isAuthenticated()" th:action="@{/logout}" method="POST">
-			<button type="submit" id="login" name="show">ログアウト</button>
-		</form>
+		<div class="margin" style="display: flex; gap: 10px;">
+			<form id="showDishesPage" th:action="@{/clerks/dishes}" method="POST"
+				sec:authorize="hasRole('ROLE_Manager')">
+				<button type="submit" id="DishesPageButton">商品一覧</button>
+			</form>
+			<form id="backToTheTitle" th:action="@{/}" method="POST">
+				<button type="submit" id="TitleBackButton">タイトルに戻る</button>
+			</form>
+			<form id="loginform" sec:authorize="isAuthenticated()" th:action="@{/logout}" method="POST">
+				<button type="submit" id="login" name="show">ログアウト</button>
+			</form>
+			<form id="clerksform" th:action="@{/clerks/clerks}" sec:authorize="hasRole('ROLE_Manager')" method="POST">
+			<button type="submit" class="manager-button">
+				店長専用ボタン
+			</button>
+			</form>
+		</div>
 	</div>
 	<script th:src="@{/js/Clerks.js}"></script>
 </body>

@@ -2,10 +2,14 @@ package com.example.demo.Entity;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -14,29 +18,30 @@ import lombok.Data;
 @Table(name = "clerks")
 public class ClerksEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	// 店員ID
-	private Integer clerkId;
-	
-	// 権限
-	private String role;
-	
-	// 氏名
-	private String name;
-	
-	// 店員番号
-	private Integer clerkNumber;
-	
-	// パスワード
-	private String password;
-	
-	// メールアドレス
-	private String mailAddress;
-	
-	// 電話番号
-	private String tel;
-	
-	// 利用開始日
-	private LocalDate startDate;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "clerk_id")
+    private Integer clerkId;
+
+    @Column(name = "name", nullable = false, length = 20)
+    private String name;
+
+    @Column(name = "clerk_number", nullable = false, unique = true)
+    private Integer clerkNumber;
+
+    @Column(name = "password", nullable = false, length = 64)
+    private String password;
+
+    @Column(name = "mail_address", nullable = false, length = 50)
+    private String mailAddress;
+
+    @Column(name = "tel", nullable = false, length = 15)
+    private String tel;
+
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;
+
+    @ManyToOne(fetch = FetchType.EAGER) // 即時ロードで権限を取得
+    @JoinColumn(name = "role_id", nullable = false) // 外部キー「clerk_roles.role_id」
+    private RolesEntity role;
 }
