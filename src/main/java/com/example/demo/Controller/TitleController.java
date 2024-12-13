@@ -1,40 +1,35 @@
 package com.example.demo.Controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.example.demo.Repository.OrderDetailsRepository;
-import com.example.demo.service.ChoiceService;
-import com.example.demo.utils.PasswordUtils;
+import com.example.demo.service.TitleService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class TitleController {
 
-	@Autowired
-	OrderDetailsRepository orderDetailsRepository;
-
-	@Autowired
-	ChoiceService choiceService;
+	private final TitleService titleService;
+	
+	TitleController(TitleService titleService) {
+		this.titleService = titleService;
+	}
 
 	// タイトルの表示
 	@RequestMapping("/")
 	public String start() {
-		String password = "password";
-		System.out.println("password："+PasswordUtils.password(password));
 		return "title/title";
 	}
 
 	// タイトルに戻る
 	@RequestMapping(path = "/title/title", params = "title")
 	public String back(Model model, HttpSession session) {
-		// 利用客番号をリセット
-		model.asMap().remove("passengerId");
-		session.removeAttribute("orderRecord");
-		choiceService.addSeatNumber(model, session);
+		
+		model.asMap().remove("passengerId"); // モデルから利用客IDを除去
+		session.removeAttribute("orderRecord"); // 注文履歴をリセット
+		titleService.addSeatNumber(model, session); // 座席番号をセッションから取得してモデル追加
 
 		return "title/title";
 	}

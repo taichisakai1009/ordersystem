@@ -12,13 +12,24 @@
 }
 
 .clerk-detail .text-margin input {
-/*	flex-grow: 1;*/
+	/*	flex-grow: 1;*/
 	/* テキストボックスを残りの幅いっぱいに拡張 */
 	height: 40px;
 	/* ボタンとテキストボックスの高さを統一 */
 }
 
 .clerk-detail .text-margin button {
-/*	height: 40px;*/
+	/*	height: 40px;*/
 	/* ボタンの高さをテキストボックスに合わせる */
+}
+
+.clerk-text {
+	background-color: lightgray;
+}
+
+.sub-container .delete-button {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+	background-color: orangered;
 }

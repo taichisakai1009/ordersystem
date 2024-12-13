@@ -77,26 +77,13 @@ public class ChoiceService {
 	}
 
 	// 座席番号と食事中フラグから利用者を検索
-	public List<PassengersEntity> getPassengerBySeatNumberAndEatingFlg(Integer seatNumber, boolean eatingFlg) {
-		return passengersRepository.findBySeatNumberAndEatingFlg(seatNumber, eatingFlg).stream() // Optional を Stream に変換
-				.toList(); // Stream を List に変換 (Java 16+);
+	public List<Integer> findPassengerIdsBySeatNumberAndEatingFlg(Integer seatNumber, boolean eatingFlg) {
+		return passengersRepository.findPassengerIdsBySeatNumberAndEatingFlg(seatNumber, eatingFlg);
 	}
 
-	// 座席番号をセッションから取得してモデル追加
-	public Integer addSeatNumber(Model model, HttpSession session) {
-		Integer seatNumber = (Integer) session.getAttribute("seatNumber");
-		if (seatNumber != null) {
-			model.addAttribute("seatNumber", seatNumber);
-		} else {
-			model.addAttribute("seatNumber", "未設定");
-		}
-		return seatNumber;
-	}
-
-	// 座席番号をセッションから取得してモデル追加
+	// 顧客番号をセッションから取得してモデル追加
 	public Integer addPassengerId(Model model, HttpSession session) {
 		Integer passengerId = (Integer) session.getAttribute("passengerId");
-		System.out.println("セッションpassengerId：" + passengerId);
 		if (passengerId != null) {
 			model.addAttribute("passengerId", passengerId);
 		} else {
@@ -105,17 +92,21 @@ public class ChoiceService {
 		return passengerId;
 	}
 
-	// 利用客IDから注文履歴を取得
-	public OrderRecordDtoList restOrderRecord(Integer passengerId, HttpSession session) {
+	// 利用客IDからテーブルのデータを参照して注文履歴を復元
+	public OrderRecordDtoList restoreOrderRecord(Integer passengerId, HttpSession session) {
 		OrderRecordDtoList orderRecordDtoList = new OrderRecordDtoList();
-		List<OrderRecordDto> orderRecordList = new ArrayList<>();
-		Integer totalPrice = 0;
+		
+		List<OrderRecordDto> orderRecordList = new ArrayList<>(); // 注文詳細データ
+		Integer totalPrice = 0; // 合計金額
+		
 		// DateTimeFormatterを使ってフォーマットを指定
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-
+		
+		// 利用客IDから注文テーブルのデータを取得
 		List<OrdersEntity> OrdersList = ordersRepository.findByPassengerId(passengerId);
 		for (OrdersEntity Order : OrdersList) {
 			LocalTime orderTime = Order.getOrderTime();
+			// 注文IDから注文詳細リストを取得
 			List<OrderDetailsEntity> OrderDetailsList = orderDetailsRepository.findByOrderId(Order.getOrderId());
 			for (OrderDetailsEntity OrderDetails : OrderDetailsList) {
 				OrderRecordDto orderRecordDto = new OrderRecordDto();
@@ -124,8 +115,7 @@ public class ChoiceService {
 				String dishName = OrderDetails.getDishName();
 				Integer quantity = OrderDetails.getQuantity();
 				orderRecordDto.setDishName(dishName);
-				System.out.println("dishName："+dishName);
-				// 詳細テーブルには値段の欄がないので検索、すでに商品テーブルに存在しないとぬるぽ
+				// 詳細テーブルには値段の欄がないので検索、すでに商品テーブルに存在しないとNullPointerエラー
 				Integer price = dishesRepository.findByDishName(dishName).getPrice();
 				orderRecordDto.setPrice(price);
 				orderRecordDto.setQuantity(quantity);
@@ -227,7 +217,8 @@ public class ChoiceService {
 	// 座席番号から利用客テーブルの検索または登録を行う。
 	public PassengersEntity registPassenger(Integer seatNumber, Model model, HttpSession session) {
 		// 全利用客情報を取得
-		List<PassengersEntity> passengers = getPassengerBySeatNumberAndEatingFlg(seatNumber, true);
+		
+		List<PassengersEntity> passengers = passengersRepository.findBySeatNumberAndEatingFlg(seatNumber, true);
 		// 指定座席に食事中の人がいない時だけ利用者登録
 		if (passengers.isEmpty()) {
 
@@ -250,7 +241,7 @@ public class ChoiceService {
 			passenger.setUndeliveredFlg(true);
 			return passenger; // 食事中の人がいたらその人を取得
 		} else {
-			throw new MultiplePassengersException("指定された座席に複数の利用者がいます。");
+			throw new MultiplePassengersException("指定された座席に複数のグループがいます。");
 		}
 	}
 

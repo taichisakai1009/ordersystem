@@ -20,52 +20,39 @@ import com.example.demo.Dto.OrderRecordDto;
 import com.example.demo.Dto.OrderRecordDtoList;
 import com.example.demo.Entity.DishesEntity;
 import com.example.demo.Entity.OrdersEntity;
-import com.example.demo.Entity.PassengersEntity;
-import com.example.demo.Repository.DishesRepository;
-import com.example.demo.Repository.OrderDetailsRepository;
-import com.example.demo.Repository.OrdersRepository;
-import com.example.demo.Repository.PassengersRepository;
+import com.example.demo.exception.MultiplePassengersException;
 import com.example.demo.service.ChoiceService;
+import com.example.demo.service.TitleService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/order")
 public class ChoiceController {
-	private final DishesRepository dishesRepository;
-	private final PassengersRepository passengersRepository;
-	private final OrdersRepository ordersRepository;
-	private final OrderDetailsRepository orderDetailsRepository;
+
+	private final TitleService titleService;
 	private final ChoiceService choiceService;
-	private final TitleController titleController;
 
-	//	TitleController
-	ChoiceController(DishesRepository dishesRepository, PassengersRepository passengersRepository,
-			OrdersRepository ordersRepository, OrderDetailsRepository orderDetailsRepository,
-			ChoiceService choiceService, TitleController titleController) {
-		this.dishesRepository = dishesRepository;
-		this.passengersRepository = passengersRepository;
-		this.ordersRepository = ordersRepository;
-		this.orderDetailsRepository = orderDetailsRepository;
+	ChoiceController(TitleService titleService, ChoiceService choiceService) {
+		this.titleService = titleService;
 		this.choiceService = choiceService;
-		this.titleController = titleController;
 	}
-
-	// 座席番号をセッションから取得してモデル追加
 
 	// 注文画面の初期表示を行う。
 	@RequestMapping(path = "/choice", params = "show")
 	public String showChoiceView(Integer seatNumber, Model model, HttpSession session) {
 		// 座席番号をモデル追加
 		session.setAttribute("seatNumber", seatNumber);
-		choiceService.addSeatNumber(model, session);
-		// 座席番号から注文履歴をセッションに設定
-		List<PassengersEntity> passengers = choiceService.getPassengerBySeatNumberAndEatingFlg(seatNumber, true);
-		if (passengers.size() == 1) {
-			Integer passengerId = passengers.get(0).getPassengerId();
+		model.addAttribute("seatNumber", seatNumber);
+		// 座席番号から利用中の客を検索 
+		List<Integer> passengerIds = choiceService.findPassengerIdsBySeatNumberAndEatingFlg(seatNumber, true);
+		if (passengerIds.size() == 1) {
+			Integer passengerId = passengerIds.get(0);
 			session.setAttribute("passengerId", passengerId);
-			choiceService.addPassengerId(model, session);
-			choiceService.restOrderRecord(passengerId, session);
+			model.addAttribute("passengerId", passengerId);
+			choiceService.restoreOrderRecord(passengerId, session); // 利用者IDから注文履歴を復元してセッション追加
+		} else if (passengerIds.size() >= 2) {
+			throw new MultiplePassengersException("指定された座席に複数のグループがいます。");
 		}
 		return "order/choice";
 	}
@@ -83,8 +70,7 @@ public class ChoiceController {
 	// モデルCartに入れるとき呼び出す。
 	@RequestMapping(path = "/choice", params = "insert")
 	public void addToCart(Integer orderNumber, Integer quantity, Model model, HttpSession session) {
-		choiceService.addSeatNumber(model, session);
-		//		choiceService.addPassengerId(model, session);
+		titleService.addSeatNumber(model, session);
 		System.out.println("Cartに追加。orderNumber：" + orderNumber + "、quantity：" + quantity);
 		choiceService.addToCart(orderNumber, quantity, session);
 	}
@@ -143,7 +129,7 @@ public class ChoiceController {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss"); // フォーマットされた時刻を取得
 		String formattedTime = orderTime.format(formatter);
 
-		// 今までの注文履歴を取得
+		// 今までの注文履歴を取得 (利用者IDを使用)
 		OrderRecordDtoList orderRecordDtoList = choiceService.getOrderRecords(session);
 
 		// 注文履歴から今までの注文リストと合計金額を取得
@@ -172,6 +158,7 @@ public class ChoiceController {
 		}
 		orderRecordDtoList.setTotalPrice(totalPrice);
 		orderRecordDtoList.setOrderRecordDtoList(OrderRecordList);
+		
 		// 注文履歴に追加
 		session.setAttribute("orderRecord", orderRecordDtoList);
 		System.out.println("注文情報：" + orderRecordDtoList);
@@ -194,7 +181,7 @@ public class ChoiceController {
 	@RequestMapping(path = "/choice", params = "model")
 	public void addModel(Model model, HttpSession session) {
 		choiceService.addPassengerId(model, session);
-		choiceService.addSeatNumber(model, session);
+		titleService.addSeatNumber(model, session);
 	}
 
 }

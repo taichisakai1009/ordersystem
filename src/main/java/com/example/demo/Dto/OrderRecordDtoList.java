@@ -12,4 +12,5 @@ public class OrderRecordDtoList {
 	
 	// 合計金額
 	private Integer totalPrice;
+	
 }

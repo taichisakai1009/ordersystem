@@ -6,8 +6,8 @@ const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 document.addEventListener("keydown", function(event) {
 	console.log("キー入力");
 	const orderCount = document.getElementById("orderCount");
-	const orderCountDisplay = window.getComputedStyle(orderCount).display;
-	const addToCartButton = document.getElementById("addToCart"); // 対象ボタンを取得
+	const orderCountDisplay = window.getComputedStyle(orderCount).display; // 「カートに入れる」ボタンがあるか否か
+	const addToCartButton = document.getElementById("addToCart"); // 「カートに入れる」ボタンを取得
 
 	if (event.key === "Enter" && orderCountDisplay === "none") {
 		event.preventDefault(); // デフォルトのフォーム送信を防止
@@ -15,7 +15,7 @@ document.addEventListener("keydown", function(event) {
 	} else if (event.key === "Enter" && orderCountDisplay === "block") {
 		event.preventDefault(); // デフォルトのフォーム送信を防止
 		console.log("Enterキーが押され、カートに入れるボタンをクリックします。");
-		// 特定のボタンをプログラムからクリック
+		// 「カートに入れる」ボタンをプログラムからクリック
 		addToCartButton.click();
 	}
 });
@@ -70,11 +70,10 @@ async function fetchDishName() {
 			const response = await fetch(`/order/choice?search&orderNumber=${orderNumber}`);
 			if (response.ok) {
 				const data = await response.json();
-//				console.log("dataJSON：" + JSON.stringify(data, null, 2));
 				const dishesEntity = data.dishesEntity; // dishesEntityを取り出す
-				const dishName = dishesEntity.dishName; // 料理名
-				const price = dishesEntity.price; // 料金
-				const onSaleFlg = dishesEntity.onSaleFlg; // 販売中フラグ
+				const dishName = dishesEntity.dishName; // 料理名を取り出す
+				const price = dishesEntity.price; // 料金を取り出す
+				const onSaleFlg = dishesEntity.onSaleFlg; // 販売中フラグを取り出す
 
 				const dishNameElement = document.getElementById("dishName"); // 商品名
 				const notForSaleElement = document.getElementById("notForSale"); // 取り扱い停止中メッセージ

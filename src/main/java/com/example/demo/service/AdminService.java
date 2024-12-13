@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.example.demo.Entity.ClerksEntity;
 import com.example.demo.Repository.ClerksRepository;
 
-//ClerksRepository
 @Service
 public class AdminService {
 
@@ -27,12 +26,10 @@ public class AdminService {
 	
 	public List<ClerksEntity> findByNameContaining(String name) {
 		return clerksRepository.findByNameContaining(name);
-	};
-
-
-//	// 店員番号で従業員を検索
-//	public List<ClerksEntity> searchClerksByNumber(Integer clerkNumber) {
-//		List<ClerksEntity> Clerks = findClerksByNumber(clerkNumber);
-//	}
+	}
+	
+	public void updateClerkDetails(Integer clerkId, String name, String mailAddress, String tel) {
+		clerksRepository.updateClerkDetails(clerkId, name, mailAddress, tel);
+	}
 
 }

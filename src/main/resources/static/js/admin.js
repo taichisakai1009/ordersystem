@@ -1,17 +1,3 @@
-// 管理画面の「編集」「保存」
-function toggleEdit() {
-	const inputField = document.getElementById('startDateText');
-	const editButton = document.getElementById('editButton');
-
-	if (inputField.readOnly) {
-		inputField.readOnly = false;
-		editButton.textContent = '保存する';
-	} else {
-		inputField.readOnly = true;
-		editButton.textContent = '編集する';
-	}
-}
-
 // 検索ワードを店員番号か店員名か選択
 function choiceSubmitForm() {
 	var selectedOption = document.getElementById("selection").value;
@@ -65,8 +51,10 @@ document.addEventListener('keydown', (event) => {
 	}
 });
 
+const tableBody = document.getElementById('clerksTableBody');
+
 // テーブルの行にクリックイベントを追加
-document.getElementById('clerksTableBody').addEventListener('click', (event) => {
+tableBody.addEventListener('click', (event) => {
 	// クリックした要素が<tr>かチェック。 event.target はクリックされた具体的なHTML要素（セルや子要素）を指します
 	const row = event.target.closest('tr');
 	if (!row) return;
@@ -83,7 +71,7 @@ document.getElementById('clerksTableBody').addEventListener('click', (event) => 
 	form.action = '/admin/clerkManagement?show';
 
 	// 各キー名は、フォーム送信時にサーバー側で受け取るパラメータのキー名になります。
-	['name', 'clerkNumber', 'mailAddress', 'tel', 'startDate', 'roleName'].forEach((key, index) => {
+	['clerkId', 'name', 'clerkNumber', 'mailAddress', 'tel', 'startDate', 'roleName'].forEach((key, index) => {
 		const input = document.createElement('input');
 		input.type = 'hidden';
 		input.name = key;
@@ -103,9 +91,6 @@ document.getElementById('clerksTableBody').addEventListener('click', (event) => 
 	document.body.appendChild(form); // 一時的にDOMに追加
 	form.submit();
 });
-
-
-const tableBody = document.getElementById('clerksTableBody');
 
 // テキストボックスの要素を取得
 const searchInput = document.getElementById('seach-clerks-byname');
@@ -158,6 +143,7 @@ function fetchClerksByName() {
 						// nullチェックと安全な文字列変換
 						const row = `
                 <tr>
+                	<td style="display: none;">${clerk.clerkId || '未設定'}</td>
                     <td>${clerk.name || '未設定'}</td>
                     <td>${clerk.clerkNumber || '未設定'}</td>
                     <td>${clerk.mailAddress || '未設定'}</td>
@@ -244,6 +230,7 @@ function fetchClerksByNumber() {
 				// nullチェックと安全な文字列変換
 				const row = `
                 <tr>
+                    <td style="display: none;">${clerk.clerkId || '未設定'}</td>
                     <td>${clerk.name || '未設定'}</td>
                     <td>${clerk.clerkNumber || '未設定'}</td>
                     <td>${clerk.mailAddress || '未設定'}</td>
