@@ -69,9 +69,14 @@
 				<button type="submit" id="login" name="show">ログアウト</button>
 			</form>
 			<form id="clerksform" th:action="@{/clerks/clerks}" sec:authorize="hasRole('ROLE_Manager')" method="POST">
-			<button type="submit" class="manager-button">
-				店長専用ボタン
-			</button>
+				<button type="submit" class="manager-button">
+					店員一覧
+				</button>
+			</form>
+			<form id="adminform" th:action="@{/admin/admin}" sec:authorize="hasRole('ROLE_Admin')" method="POST">
+				<button type="submit" class="admin-button">
+					管理者画面
+				</button>
 			</form>
 		</div>
 	</div>

@@ -1,0 +1,24 @@
+@charset "UTF-8";
+
+.clerk-detail .text-margin {
+	display: flex;
+	/* 要素を横並びに配置 */
+	align-items: center;
+	/* テキストボックスとボタンを垂直方向で中央揃え */
+	gap: 10px;
+	/* テキストボックスとボタンの間隔 */
+	margin-bottom: 15px;
+	/* 各行の間隔を統一 */
+}
+
+.clerk-detail .text-margin input {
+/*	flex-grow: 1;*/
+	/* テキストボックスを残りの幅いっぱいに拡張 */
+	height: 40px;
+	/* ボタンとテキストボックスの高さを統一 */
+}
+
+.clerk-detail .text-margin button {
+/*	height: 40px;*/
+	/* ボタンの高さをテキストボックスに合わせる */
+}

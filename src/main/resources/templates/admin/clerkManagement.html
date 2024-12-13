@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+	<title>店員管理画面</title>
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+	<link th:href="@{/css/clerkManagement.css}" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+		<div class="margin">
+			<a href="/admin/admin">管理者画面へ戻る</a>
+		</div>
+		<div class="sub-container">
+			<div class="clerk-detail">
+				<div class="text-margin">
+					<input type="text" id="nameText" th:value="${name}" readonly>
+					<button id="editButton" type="button" onclick="toggleEdit()">編集する</button>
+				</div>
+				<div class="text-margin">
+					<input type="number" id="clerkNumberText" th:value="${clerkNumber}" readonly>
+					<!--				<button id="editButton" type="button" onclick="toggleEdit()">編集する</button>-->
+				</div>
+				<div class="text-margin">
+					<input type="text" id="startDateText" th:value="${mailAddress}" readonly>
+					<button id="editButton" type="button" onclick="toggleEdit()">編集する</button>
+				</div>
+				<div class="text-margin">
+					<input type="text" id="clerkNumberText" th:value="${tel}" readonly>
+					<button id="editButton" type="button" onclick="toggleEdit()">編集する</button>
+				</div>
+				<div class="text-margin">
+					<input type="text" id="startDateText" th:value="${startDate}" readonly>
+					<!--				<button id="editButton" type="button" onclick="toggleEdit()">編集する</button>-->
+				</div>
+				<div class="text-margin">
+					<input type="text" id="roleNameText" th:value="${roleName}" readonly>
+					<!--				<button id="editButton" type="button" onclick="toggleEdit()">編集する</button>-->
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script th:src="@{/js/admin.js}"></script>
+</body>
+
+</html>

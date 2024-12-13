@@ -47,11 +47,12 @@
 
 			</div>
 		</form>
+<!--		 sec:authorize="!isAuthenticated()"-->
 		<div class="link-button">
-			<div class="margin" sec:authorize="!isAuthenticated()">
+			<div class="margin" id="show-login" sec:authorize="!isAuthenticated()">
 				<a href="/login/login?show">店員の方はこちら</a>
 			</div>
-			<div class="margin" sec:authorize="isAuthenticated()">
+			<div class="margin" id="show-passensior" sec:authorize="isAuthenticated()">
 				<a href="/clerks/choice?show">選択画面へ</a>
 			</div>
 		</div>

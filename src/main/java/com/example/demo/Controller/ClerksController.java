@@ -60,6 +60,7 @@ public class ClerksController {
 	ClerksRepository clerksRepository;
 
 	// 利用客選択画面表示
+//	@PreAuthorize("hasRole('Regular', 'Manager')")
 	@RequestMapping(path = "/choice", params = "show")
 	public String showChoiceView(Model model) {
 

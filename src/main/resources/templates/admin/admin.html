@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+	<title>システム管理者画面</title>
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+		<div class="admin-info">ようこそ[[${clerk.name}]]様</div>
+		<div class="margin">
+			<a href="/clerks/choice?show">選択画面へ</a>
+		</div>
+		<div class="margin">
+			<a href="/admin/clerkSelect?show">店員管理画面へ</a>
+		</div>
+
+
+
+	</div>
+</body>
+
+</html>

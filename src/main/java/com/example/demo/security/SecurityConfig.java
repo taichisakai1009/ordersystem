@@ -19,13 +19,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 // 通称「設定クラス」。
 public class SecurityConfig implements WebMvcConfigurer {
 
-//	@Autowired
-//	private CustomUserDetailsService customuserDetailsService;
-//	@Autowired
-//	private UserDetailsService userDetailsService;
+	//	@Autowired
+	//	private CustomUserDetailsService customuserDetailsService;
+	//	@Autowired
+	//	private UserDetailsService userDetailsService;
 	@Autowired
 	private ClerkDetailsService clerkDetailsService;
+	@Autowired
+	private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
+	//	new CustomAuthenticationSuccessHandler()
 	@Bean
 	public AuthenticationManager authManager(HttpSecurity http) throws Exception {
 		return http.getSharedObject(AuthenticationManagerBuilder.class)
@@ -46,7 +49,8 @@ public class SecurityConfig implements WebMvcConfigurer {
 				.formLogin(login -> login
 						.loginPage("/login/login?show=true").permitAll()
 						.loginProcessingUrl("/in") // 入力フォームのth:actionと分けなければいけない
-						.defaultSuccessUrl("/clerks/choice?show", true)
+						//						.defaultSuccessUrl(new CustomAuthenticationSuccessHandler())
+						.successHandler(customAuthenticationSuccessHandler) // カスタム成功ハンドラを設定
 						.failureUrl("/login/login?show=true&error=true") // ログイン失敗後のリダイレクト先
 						.usernameParameter("clerkNumber")
 						.passwordParameter("password"))
@@ -65,6 +69,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 						.requestMatchers("/css/**").permitAll() // css
 						.requestMatchers("/js/**").permitAll() // js
 						.requestMatchers("/clerks/**").authenticated() // /clerks/** パスは認証が必要
+						.requestMatchers("/admin/**").hasRole("Admin") // Admin権限が必要
 						.anyRequest().authenticated());
 
 		return http.build();

@@ -8,14 +8,17 @@ import org.springframework.stereotype.Service;
 import com.example.demo.Entity.ClerksEntity;
 import com.example.demo.Repository.ClerksRepository;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 
 @Service
 public class ClerkDetailsService implements UserDetailsService {
     private final ClerksRepository clerksRepository;
+    private final HttpSession session;
 
-    public ClerkDetailsService(ClerksRepository clerksRepository) {
+    public ClerkDetailsService(ClerksRepository clerksRepository, HttpSession session) {
         this.clerksRepository = clerksRepository;
+        this.session = session;
     }
     
     @Transactional // RolesEntityのclerksプロパティ（コレクション）を遅延ロードしようとした際にHibernateのセッションが閉じられており、データベースアクセスができなくなった。
@@ -23,6 +26,7 @@ public class ClerkDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String clerkNumber) throws UsernameNotFoundException {
         ClerksEntity clerk = clerksRepository.findByClerkNumber(Integer.parseInt(clerkNumber))
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        session.setAttribute("clerk", clerk);
         System.out.println("clerk:" + clerk);
         return new ClerkDetails(clerk);
     }
