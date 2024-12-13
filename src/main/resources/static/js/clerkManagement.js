@@ -73,3 +73,13 @@ function changeClerkDetails() {
 			});
 	}
 }
+
+function confirmDelete(event) {
+	// 確認ダイアログを表示
+	const userConfirmed = confirm("本当にこのユーザーを削除しますか？");
+
+	// ユーザーが「OK」をクリックした場合のみフォームを送信
+	if (!userConfirmed) {
+		event.preventDefault(); // フォーム送信をキャンセル
+	}
+}

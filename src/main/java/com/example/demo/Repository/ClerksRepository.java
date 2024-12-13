@@ -27,4 +27,7 @@ public interface ClerksRepository extends JpaRepository<ClerksEntity, Integer> {
                            @Param("name") String name, 
                            @Param("mailAddress") String mailAddress, 
                            @Param("tel") String tel);
+    
+    void deleteByClerkId(Integer clerkId);
+
 }

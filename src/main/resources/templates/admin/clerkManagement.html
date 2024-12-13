@@ -17,8 +17,6 @@
 		</div>
 		<div class="sub-container">
 			<div class="clerk-detail">
-					
-				<input type="hidden" id="clerkIdHidden" th:value="${clerkId}" readonly>
 
 				<div class="text-margin">
 					<lavel for="editableText1">氏名　　　　　：</lavel>
@@ -48,9 +46,15 @@
 					<input type="text" id="roleNameText" class="clerk-text" th:value="${roleName}" readonly>
 				</div>
 			</div>
-			<button type="button" id="changeClerkDetails" class="disabled-button" onclick="changeClerkDetails()" disabled>編集内容に更新</button>
-			<button type="button" class="delete-button">このユーザーを削除</button>
+			<button type="button" id="changeClerkDetails" class="disabled-button" onclick="changeClerkDetails()"
+				disabled>編集内容に更新</button>
+			<form id="delete-clerk" th:action="@{/admin/clerkSelect}" onsubmit="confirmDelete(event)">
+				<input type="hidden" id="clerkIdHidden" name="clerkId" th:value="${clerkId}" readonly>
+				<button type="submit" th:if="${clerk.clerkId != clerkId}" id="delete-clerk-button" class="delete-button" name="delete">このユーザーを削除</button>
+			</form>
 		</div>
+
+	</div>
 	</div>
 	<script th:src="@{/js/clerkManagement.js}"></script>
 </body>

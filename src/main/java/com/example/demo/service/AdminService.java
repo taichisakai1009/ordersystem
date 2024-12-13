@@ -31,5 +31,9 @@ public class AdminService {
 	public void updateClerkDetails(Integer clerkId, String name, String mailAddress, String tel) {
 		clerksRepository.updateClerkDetails(clerkId, name, mailAddress, tel);
 	}
+	
+	public void deleteByClerkId(Integer clerkId) {
+		clerksRepository.deleteByClerkId(clerkId);
+	}
 
 }

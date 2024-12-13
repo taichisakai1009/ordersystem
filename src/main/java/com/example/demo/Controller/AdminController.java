@@ -19,6 +19,7 @@ import com.example.demo.service.AdminService;
 import com.example.demo.service.ClerksService;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 
 @Controller
 @RequestMapping("/admin")
@@ -79,6 +80,8 @@ public class AdminController {
 		model.addAttribute("tel", tel);
 		model.addAttribute("startDate", startDate);
 		model.addAttribute("roleName", roleName);
+		ClerksEntity clerk = (ClerksEntity) session.getAttribute("clerk");
+		model.addAttribute("clerk", clerk);
 		return "admin/clerkManagement";
 	}
 
@@ -86,7 +89,15 @@ public class AdminController {
 	@RequestMapping(path = "/clerkSelect", params = "update", method = RequestMethod.POST)
 	public void updateClerkDetails(@RequestBody ClerkDetailsDto dto) {
 	    adminService.updateClerkDetails(dto.getClerkId(), dto.getName(), dto.getMailAddress(), dto.getTel());
-	    System.out.println("パラメータ："+dto);
+	}
+	
+	// 店員情報の削除
+	@Transactional
+	@RequestMapping(path = "/clerkSelect", params = "delete")
+	public String deleteByClerkId(Integer clerkId) {
+	    adminService.deleteByClerkId(clerkId);
+	    System.out.println("店員情報の削除。clerkId = " + clerkId);
+	    return "admin/clerkSelect";
 	}
 
 }
