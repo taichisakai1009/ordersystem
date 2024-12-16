@@ -94,7 +94,7 @@ async function fetchDishName() {
 						notForSaleElement.style.display = "block";
 						notForSaleElement.style.color = "red";
 					}
-				} 
+				}
 			}
 		} catch (error) {
 			console.error('Fetch error:', error);

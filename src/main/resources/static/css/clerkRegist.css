@@ -1,0 +1,9 @@
+@charset "UTF-8";
+
+#clerk-submit-button {
+	display: none;
+}
+
+#clerk-number-duplication {
+	display: none;
+}

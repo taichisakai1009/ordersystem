@@ -68,7 +68,7 @@ tableBody.addEventListener('click', (event) => {
 	// フォームデータを設定
 	const form = document.createElement('form');
 	form.method = 'POST'; // 必要に応じて 'GET' に変更可能
-	form.action = '/admin/clerkManagement?show';
+	form.action = '/clerks/clerkManagement?show';
 
 	// 各キー名は、フォーム送信時にサーバー側で受け取るパラメータのキー名になります。
 	['clerkId', 'name', 'clerkNumber', 'mailAddress', 'tel', 'startDate', 'roleName'].forEach((key, index) => {
@@ -108,7 +108,7 @@ function fetchClerksByName() {
         </tr>
     `;
 
-			fetch(`/admin/clerkSelect?nameSearch&name=${encodeURIComponent(searchInput.value.trim())}`, {
+			fetch(`/clerks/clerkSelect?nameSearch&name=${encodeURIComponent(searchInput.value.trim())}`, {
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json',
@@ -178,15 +178,15 @@ function fetchClerksByName() {
 }
 
 
+// 社員番号や電話番号など、複数の入力フィールドを使って分割して入力されたデータを1つにまとめる際に有効
 
-
-const digitInputs = document.querySelectorAll('input[id^="digit"]');
+const digitInputs = document.querySelectorAll('input[id^="digit"]'); // NodeList
 function fetchClerksByNumber() {
 
 	// 6桁の数字を結合
-	const clerkNumber = Array.from(digitInputs)
-		.map(input => input.value)
-		.join('');
+	const clerkNumber = Array.from(digitInputs) // NodeListを配列に変換
+		.map(input => input.value) // 配列内の各入力フィールドの値を取得
+		.join(''); // 取得した値を1つの文字列として結合
 
 	// エラーハンドリングとローディング状態の追加
 	tableBody.innerHTML = `
@@ -195,7 +195,7 @@ function fetchClerksByNumber() {
         </tr>
     `;
 
-	fetch(`/admin/clerkSelect?numberSearch&clerkNumber=${clerkNumber}`, {
+	fetch(`/clerks/clerkSelect?numberSearch&clerkNumber=${clerkNumber}`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',

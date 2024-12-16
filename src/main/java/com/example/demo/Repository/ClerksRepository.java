@@ -29,5 +29,7 @@ public interface ClerksRepository extends JpaRepository<ClerksEntity, Integer> {
                            @Param("tel") String tel);
     
     void deleteByClerkId(Integer clerkId);
+    
+    boolean existsByClerkNumber(Integer clerkNumber); // 入力された店員番号と一致するデータがあったらtrue,無かったらfalse
 
 }

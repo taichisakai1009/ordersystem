@@ -1,15 +1,9 @@
 package com.example.demo.Controller;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.Dto.ClerkDetailsDto;
@@ -38,66 +32,42 @@ public class AdminController {
 		this.clerksRepository = clerksRepository;
 	}
 
-	// 管理者画面表示
-	@PreAuthorize("hasRole('Admin')")
-	@RequestMapping(path = "/admin")
-	public String showAdminPage(Model model) {
-		ClerksEntity clerk = (ClerksEntity) session.getAttribute("clerk");
-		model.addAttribute("clerk", clerk);
-		return "admin/admin";
-	}
-
-	// 店員選択画面表示
-	@PreAuthorize("hasRole('Admin')")
-	@RequestMapping(path = "/clerkSelect", params = "show")
-	public String showClerkSelect() {
-		System.out.println("店員選択画面表示");
-		return "admin/clerkSelect";
-	}
-
-	// 店員番号で従業員を検索
-	@RequestMapping(path = "/clerkSelect", params = "numberSearch")
-	@ResponseBody // JSONレスポンスを返すために追加
-	public List<ClerksEntity> searchClerksByNumber(@RequestParam Integer clerkNumber) {
-		return adminService.findClerksByNumber(clerkNumber);
-	}
-
-	// 氏名（あいまい検索）で従業員を検索
-	@RequestMapping(path = "/clerkSelect", params = "nameSearch")
-	@ResponseBody // JSONレスポンスを返すために追加
-	public List<ClerksEntity> searchClerksByName(@RequestParam String name) {
-		return adminService.findByNameContaining(name);
-	}
-
-	// 店員管理画面表示
-	@RequestMapping(path = "/clerkManagement", params = "show")
-	public String showClerkManagement(Integer clerkId, String name, Integer clerkNumber, String mailAddress, String tel,
-			LocalDate startDate, String roleName, Model model) {
-		model.addAttribute("clerkId", clerkId);
-		model.addAttribute("name", name);
-		model.addAttribute("clerkNumber", clerkNumber);
-		model.addAttribute("mailAddress", mailAddress);
-		model.addAttribute("tel", tel);
-		model.addAttribute("startDate", startDate);
-		model.addAttribute("roleName", roleName);
-		ClerksEntity clerk = (ClerksEntity) session.getAttribute("clerk");
-		model.addAttribute("clerk", clerk);
-		return "admin/clerkManagement";
-	}
 
 	// 店員情報の更新
 	@RequestMapping(path = "/clerkSelect", params = "update", method = RequestMethod.POST)
 	public void updateClerkDetails(@RequestBody ClerkDetailsDto dto) {
-	    adminService.updateClerkDetails(dto.getClerkId(), dto.getName(), dto.getMailAddress(), dto.getTel());
+		adminService.updateClerkDetails(dto.getClerkId(), dto.getName(), dto.getMailAddress(), dto.getTel());
 	}
-	
+
 	// 店員情報の削除
 	@Transactional
 	@RequestMapping(path = "/clerkSelect", params = "delete")
 	public String deleteByClerkId(Integer clerkId) {
-	    adminService.deleteByClerkId(clerkId);
-	    System.out.println("店員情報の削除。clerkId = " + clerkId);
-	    return "admin/clerkSelect";
+		adminService.deleteByClerkId(clerkId);
+		System.out.println("店員情報の削除。clerkId = " + clerkId);
+		return "admin/clerkSelect";
+	}
+
+	//　店員登録画面表示
+	@RequestMapping(path = "/clerkRegist", params = "show")
+	public String showClerkRegist() {
+		return "admin/clerkRegist";
+	}
+
+	// 登録する店員番号がすでに使われていないか調べる
+	@RequestMapping(path = "/clerkRegist", params = "duplication")
+	@ResponseBody // JSONレスポンスを返すために追加 @PathVariable 
+	public boolean existsByClerkNumber(Integer clerkNumber) {
+		return adminService.existsByClerkNumber(clerkNumber);
+	}
+
+	// 店員の登録
+	@RequestMapping(path = "/clerkRegist", params = "regist")
+	public String registClerk(String name, Integer clerkNumber, String rawPassword, String mailAddress, String tel,
+			String startDateStr, Integer roleId) {
+		ClerksEntity clerksEntity = adminService.registClerk(name, clerkNumber, rawPassword, mailAddress, tel, startDateStr, roleId);
+		System.out.println("新規登録：" + clerksEntity);
+		return "admin/clerkRegist";
 	}
 
 }

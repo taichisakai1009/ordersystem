@@ -12,23 +12,3 @@
 .seach-clerks-name {
 	display: none;
 }
-
-.no-spinner {
-    -moz-appearance: textfield; /* Firefox */
-    -webkit-appearance: none; /* Safari and Chrome */
-    appearance: none;
-    text-align: center; /* 数字を中央に配置 */
-    width: 20px; /* 必要に応じて幅を調整 */
-}
-
-/* Webkit（Chrome、Safari、Opera）ブラウザのスピナーを非表示にする */
-.no-spinner::-webkit-outer-spin-button,
-.no-spinner::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-/* Firefoxブラウザのスピナーを非表示にする */
-.no-spinner {
-    -moz-appearance: textfield;
-}

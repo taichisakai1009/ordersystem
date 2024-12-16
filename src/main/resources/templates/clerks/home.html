@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+	<title>ホーム画面</title>
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+	<link th:href="@{/css/home.css}" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+		<div class="sub-container">
+			<div class="admin-info">ようこそ[[${clerk.name}]]様</div>
+			<button type="button" id="profile-button">ユーザー情報を表示</button>
+			<div class="margin">
+				<a href="/clerks/choice?show">利用客選択画面へ</a>
+			</div>
+			<div class="margin" th:if="${clerk.role.id != 1}">
+				<a href="/clerks/clerkSelect?show">店員検索画面へ</a>
+			</div>
+			<div class="margin" th:if="${clerk.role.id == 3}">
+				<a href="/admin/clerkRegist?show">店員登録画面へ</a>
+			</div>
+			<form id="loginform" sec:authorize="isAuthenticated()" th:action="@{/logout}" method="POST">
+				<button type="submit" id="logout-button" name="show">ログアウト</button>
+			</form>
+		</div>
+	</div>
+</body>
+
+</html>

@@ -1,5 +1,6 @@
 package com.example.demo.Controller;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
@@ -58,6 +59,17 @@ public class ClerksController {
 	
 	@Autowired
 	ClerksRepository clerksRepository;
+	
+	@Autowired
+	HttpSession session;
+	
+    // ホーム画面表示
+	@RequestMapping(path = "/home")
+	public String showAdminPage(Model model) {
+		ClerksEntity clerk = (ClerksEntity) session.getAttribute("clerk");
+		model.addAttribute("clerk", clerk);
+		return "clerks/home";
+	}
 
 	// 利用客選択画面表示
 //	@PreAuthorize("hasRole('Regular', 'Manager')")
@@ -216,6 +228,44 @@ public class ClerksController {
 		model.addAttribute("clerks", clerks);
 		return "clerks/clerks";
 	}
+	
+	// 店員選択画面表示
+	@RequestMapping(path = "/clerkSelect", params = "show")
+	public String showClerkSelect() {
+		System.out.println("店員選択画面表示");
+		return "clerks/clerkSelect";
+	}
+
+	// 店員番号で従業員を検索
+	@RequestMapping(path = "/clerkSelect", params = "numberSearch")
+	@ResponseBody // JSONレスポンスを返すために追加
+	public List<ClerksEntity> searchClerksByNumber(@RequestParam Integer clerkNumber) {
+		return clerksService.findClerksByNumber(clerkNumber);
+	}
+
+	// 氏名（あいまい検索）で従業員を検索
+	@RequestMapping(path = "/clerkSelect", params = "nameSearch")
+	@ResponseBody // JSONレスポンスを返すために追加
+	public List<ClerksEntity> searchClerksByName(@RequestParam String name) {
+		return clerksService.findByNameContaining(name);
+	}
+
+	// 店員管理画面表示
+	@RequestMapping(path = "/clerkManagement", params = "show")
+	public String showClerkManagement(Integer clerkId, String name, Integer clerkNumber, String mailAddress, String tel,
+			LocalDate startDate, String roleName, Model model) {
+		model.addAttribute("clerkId", clerkId);
+		model.addAttribute("name", name);
+		model.addAttribute("clerkNumber", clerkNumber);
+		model.addAttribute("mailAddress", mailAddress);
+		model.addAttribute("tel", tel);
+		model.addAttribute("startDate", startDate);
+		model.addAttribute("roleName", roleName);
+		// 自分の情報によってボタンの活性、非活性を切り替え
+		ClerksEntity clerk = (ClerksEntity) session.getAttribute("clerk");
+		model.addAttribute("clerk", clerk);
+		return "clerks/clerkManagement";
+	}
 
 	// ログイン成功時のメソッド
 	@RequestMapping(path = "/login")
@@ -239,4 +289,6 @@ public class ClerksController {
 		System.out.println("メニューに戻る");
 		return "order/choice";
 	}
+	
+	
 }

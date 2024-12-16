@@ -3,34 +3,35 @@
 
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<meta name="_csrf" th:content="${_csrf.token}" />
 	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
-	<title>店員選択画面</title>
+	<title>店員検索画面</title>
 	<link th:href="@{/css/common.css}" rel="stylesheet">
 	<link th:href="@{/css/clerkSelect.css}" rel="stylesheet">
 </head>
 
 <body>
 	<div class="container">
-
 		<div class="margin">
-			<a href="/admin/admin">管理者画面へ戻る</a>
+			<a href="/clerks/home">ホーム画面へ戻る</a>
 		</div>
 		<div class="sub-container">
 			<div class="seach-clerks">
 				<div class="seach-clerks-form">
 					<div class="seach-clerks-number">
-							<lavel for="seach-clerks-bynum"></lavel>
-							<input type="number" id="digit0" oninput="moveFocus(0)" class="no-spinner" autofocus>
-							<input type="number" id="digit1" oninput="moveFocus(1)" class="no-spinner">
-							<input type="number" id="digit2" oninput="moveFocus(2)" class="no-spinner">
-							<input type="number" id="digit3" oninput="moveFocus(3)" class="no-spinner">
-							<input type="number" id="digit4" oninput="moveFocus(4)" class="no-spinner">
-							<input type="number" id="digit5" oninput="moveFocus(5)" class="no-spinner">
+						<lavel for="seach-clerks-bynum"></lavel>
+						<input type="number" id="digit0" oninput="moveFocus(0)" class="no-spinner" autofocus>
+						<input type="number" id="digit1" oninput="moveFocus(1)" class="no-spinner">
+						<input type="number" id="digit2" oninput="moveFocus(2)" class="no-spinner">
+						<input type="number" id="digit3" oninput="moveFocus(3)" class="no-spinner">
+						<input type="number" id="digit4" oninput="moveFocus(4)" class="no-spinner">
+						<input type="number" id="digit5" oninput="moveFocus(5)" class="no-spinner">
 					</div>
 					<div class="seach-clerks-name">
-							<lavel for="seach-clerks-byname"></lavel>
-							<input type="text" id="seach-clerks-byname" placeholder="店員の名前を入力" oninput="fetchClerksByName()">
+						<lavel for="seach-clerks-byname"></lavel>
+						<input type="text" id="seach-clerks-byname" placeholder="店員の名前を入力"
+							oninput="fetchClerksByName()">
 					</div>
 				</div>
 				<div class="select-form-pulldown">
@@ -51,7 +52,7 @@
 							<th>店員番号</th>
 							<th>メールアドレス</th>
 							<th>携帯番号</th>
-							<th>勤務開始日</th>
+							<th>登録日</th>
 							<th>権限</th>
 						</tr>
 					</thead>
@@ -61,7 +62,7 @@
 		</div>
 
 	</div>
-	<script th:src="@{/js/admin.js}"></script>
+	<script th:src="@{/js/clerkSelect.js}"></script>
 </body>
 
 </html>

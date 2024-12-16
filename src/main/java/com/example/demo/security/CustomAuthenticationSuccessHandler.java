@@ -19,11 +19,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         // 権限を確認
         if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_Admin"))) {
-            response.sendRedirect("/admin/admin");
+            response.sendRedirect("/clerks/home");
         } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_Manager"))) {
-            response.sendRedirect("/clerks/choice?show");
+            response.sendRedirect("/clerks/home");
         } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_Regular"))) {
-            response.sendRedirect("/clerks/choice?show");
+            response.sendRedirect("/clerks/home");
         } else {
             response.sendRedirect("/login/login?error=unauthorized"); // 権限がない場合の処理
         }

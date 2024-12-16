@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import com.example.demo.Dto.SeePassengersDto;
 import com.example.demo.Entity.ClerksEntity;
 import com.example.demo.Entity.OrdersEntity;
 import com.example.demo.Entity.PassengersEntity;
+import com.example.demo.Repository.ClerksRepository;
 import com.example.demo.Repository.OrderDetailsRepository;
 import com.example.demo.Repository.OrdersRepository;
 import com.example.demo.Repository.PassengersRepository;
@@ -27,7 +29,10 @@ public class ClerksService {
 
 	@Autowired
 	PassengersRepository passengersRepository;
-
+	
+	@Autowired
+	ClerksRepository clerksRepository;
+	
 	// エンティティを元にDtoにセット List<PassengersEntity>→List<SeePassengersDto>
 	public List<SeePassengersDto> setSeePassengersDtoList(List<PassengersEntity> passengers) {
 		List<SeePassengersDto> seePassengersDtoList = new ArrayList<>();
@@ -86,6 +91,16 @@ public class ClerksService {
 			seeClerksDtoList.add(seeClerksDto);
 		}
 		return seeClerksDtoList;
+	}
+	
+	public List<ClerksEntity> findClerksByNumber(Integer clerkNumber) {
+		return clerksRepository.findByClerkNumber(clerkNumber)
+				.map(Collections::singletonList) // OptionalをListに変換
+				.orElse(Collections.emptyList()); // 値が存在しない場合は空のリストを返す
+	}
+
+	public List<ClerksEntity> findByNameContaining(String name) {
+		return clerksRepository.findByNameContaining(name);
 	}
 // エンティティを元にDtoにセット List<DishesEntity>→List<SeeDishesDto>
 //	public List<SeeDishesDto> setSeeDishesDtoList(List<DishesEntity> dishes) {

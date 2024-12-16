@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}">
+	<title>店員登録</title>
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+	<link th:href="@{/css/clerkRegist.css}" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+		<div class="margin">
+			<a href="/clerks/home">ホーム画面へ戻る</a>
+		</div>
+		<div class="sub-container">
+			<form id="clerk-submit" th:action="@{/admin/clerkRegist}">
+
+				<input type="hidden" id="regist-num" name="clerkNumber">
+				<input type="hidden" id="regist-password" name="rawPassword">
+				<input type="hidden" id="regist-date" name="startDateStr">
+
+				<div class="margin">
+					<lavel for="regist-form-name">氏名　　　　　：</lavel>
+					<input type="text" id="regist-form-name" name="name" required>
+				</div>
+				<div class="margin">
+					<lavel for="regist-form-number">店員番号　　　：</lavel>
+					<input type="number" id="regist-digit0" oninput="moveFocus(0)" class="no-spinner" autofocus>
+					<input type="number" id="regist-digit1" oninput="moveFocus(1)" class="no-spinner">
+					<input type="number" id="regist-digit2" oninput="moveFocus(2)" class="no-spinner">
+					<input type="number" id="regist-digit3" oninput="moveFocus(3)" class="no-spinner">
+					<input type="number" id="regist-digit4" oninput="moveFocus(4)" class="no-spinner">
+					<input type="number" id="regist-digit5" oninput="moveFocus(5)" class="no-spinner">
+				</div>
+				<div class="margin">
+					<lavel for="regist-form-mail">メールアドレス：</lavel>
+					<input type="text" id="regist-form-mail" name="mailAddress" required>
+				</div>
+				<div class="margin">
+					<lavel for="regist-form-tel">電話番号　　　：</lavel>
+					<input type="text" id="regist-form-tel" name="tel" required>
+				</div>
+				<div class="margin">
+					<lavel for="regist-form-role">権限　　　　　：</lavel>
+					<select id="regist-form-role" name="roleId">
+						<option value="1">店員</option> <!--regular-->
+						<option value="2">店長</option> <!--maneger-->
+						<option value="3">管理者</option> <!--admin-->
+					</select>
+				</div>
+				<button type="button" id="clerk-submit-button" onclick="confirmAndSubmit(event)">新規登録</button>
+				<p><span id="clerk-number-duplication">この店員番号はすでに使われています。</span></p>
+			</form>
+		</div>
+	</div>
+	<script th:src="@{/js/clerkRegist.js}"></script>
+</body>
+
+</html>

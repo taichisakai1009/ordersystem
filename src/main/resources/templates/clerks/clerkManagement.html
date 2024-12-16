@@ -3,6 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<meta name="_csrf" th:content="${_csrf.token}" />
 	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 	<title>店員管理画面</title>
@@ -13,7 +14,7 @@
 <body>
 	<div class="container">
 		<div class="margin">
-			<a href="/admin/clerkSelect?show">店員管理画面へ</a>
+			<a href="/clerks/clerkSelect?show">店員選択画面へ</a>
 		</div>
 		<div class="sub-container">
 			<div class="clerk-detail">
@@ -21,7 +22,7 @@
 				<div class="text-margin">
 					<lavel for="editableText1">氏名　　　　　：</lavel>
 					<input type="text" id="editableText1" class="clerk-text" th:value="${name}" readonly>
-					<button id="editButton1" type="button" onclick="toggleEdit(1)">編集する</button>
+					<button th:if="${clerk.role.id == 3}" id="editButton1" type="button" onclick="toggleEdit(1)">編集する</button>
 				</div>
 				<div class="text-margin">
 					<lavel for="clerkNumberText">店員番号　　　：</lavel>
@@ -30,15 +31,15 @@
 				<div class="text-margin">
 					<lavel for="editableText2">メールアドレス：</lavel>
 					<input type="text" id="editableText2" class="clerk-text" th:value="${mailAddress}" readonly>
-					<button id="editButton2" type="button" onclick="toggleEdit(2)">編集する</button>
+					<button th:if="${clerk.role.id == 3}" id="editButton2" type="button" onclick="toggleEdit(2)">編集する</button>
 				</div>
 				<div class="text-margin">
 					<lavel for="editableText3">電話番号　　　：</lavel>
 					<input type="text" id="editableText3" class="clerk-text" th:value="${tel}" readonly>
-					<button id="editButton3" type="button" onclick="toggleEdit(3)">編集する</button>
+					<button th:if="${clerk.role.id == 3}" id="editButton3" type="button" onclick="toggleEdit(3)">編集する</button>
 				</div>
 				<div class="text-margin">
-					<lavel for="startDateText">勤務開始日　　：</lavel>
+					<lavel for="startDateText">登録日　　　　：</lavel>
 					<input type="text" id="startDateText" class="clerk-text" th:value="${startDate}" readonly>
 				</div>
 				<div class="text-margin">
@@ -46,11 +47,11 @@
 					<input type="text" id="roleNameText" class="clerk-text" th:value="${roleName}" readonly>
 				</div>
 			</div>
-			<button type="button" id="changeClerkDetails" class="disabled-button" onclick="changeClerkDetails()"
+			<button type="button" th:if="${clerk.role.id == 3}" id="changeClerkDetails" class="disabled-button" onclick="changeClerkDetails()"
 				disabled>編集内容に更新</button>
 			<form id="delete-clerk" th:action="@{/admin/clerkSelect}" onsubmit="confirmDelete(event)">
 				<input type="hidden" id="clerkIdHidden" name="clerkId" th:value="${clerkId}" readonly>
-				<button type="submit" th:if="${clerk.clerkId != clerkId}" id="delete-clerk-button" class="delete-button" name="delete">このユーザーを削除</button>
+				<button type="submit" th:if="${clerk.clerkId != clerkId && clerk.role.id == 3}" id="delete-clerk-button" class="delete-button" name="delete">このユーザーを削除</button>
 			</form>
 		</div>
 
