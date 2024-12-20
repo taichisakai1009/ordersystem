@@ -94,6 +94,55 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
+		<!--https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-authorization-server -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-authorization-server</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+		<!--		totpサポート-->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>33.4.0-jre</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/de.taimos/totp -->
+		<dependency>
+			<groupId>de.taimos</groupId>
+			<artifactId>totp</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
+		<!--		QRコードサポート-->
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>3.5.3</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.zxing/javase -->
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+			<version>3.5.3</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+		<!--		Base32エンコードを使用するために追加-->
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.17.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.itextpdf/itext7-core -->
+		<!--		PDF生成のためのライブラリ-->
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>itext7-core</artifactId>
+			<version>9.0.0</version>
+			<type>pom</type>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
@@ -105,6 +154,13 @@
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
+							<!--
+							https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+							<dependency>
+								<groupId>commons-codec</groupId>
+								<artifactId>commons-codec</artifactId>
+								<version>1.17.1</version>
+							</dependency>
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>

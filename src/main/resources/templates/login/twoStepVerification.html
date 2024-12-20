@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+	<title>二段階認証画面</title>
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+		<div class="sub-container">
+			<div class="margin">
+				<form id="verificationForm" th:action="@{/two-factor-auth/verification}">
+					<lavel for="verificationCode">確認コード：</lavel>
+					<input type="text" id="verificationCode" name="code">
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+					<button type="submit" id="verification-button">認証</button>
+				</form>
+			</div>
+			<div class="margin">
+				<div class="error-message" th:text="${verifyError}"></div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

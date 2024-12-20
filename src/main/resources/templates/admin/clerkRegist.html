@@ -42,7 +42,7 @@
 				</div>
 				<div class="margin">
 					<lavel for="regist-form-tel">電話番号　　　：</lavel>
-					<input type="text" id="regist-form-tel" name="tel" required>
+					<input type="number" id="regist-form-tel" name="tel" required>
 				</div>
 				<div class="margin">
 					<lavel for="regist-form-role">権限　　　　　：</lavel>
@@ -55,6 +55,12 @@
 				<button type="button" id="clerk-submit-button" onclick="confirmAndSubmit(event)">新規登録</button>
 				<p><span id="clerk-number-duplication">この店員番号はすでに使われています。</span></p>
 			</form>
+			<div class="margin">
+				<div id="registComfirm" th:text="${registComfirm}"></div>
+				<div id="nameError" class="error-message" th:text="${nameError}"></div>
+				<div id="mailError" class="error-message" th:text="${mailError}"></div>
+				<div id="telError" class="error-message" th:text="${telError}"></div>
+			</div>
 		</div>
 	</div>
 	<script th:src="@{/js/clerkRegist.js}"></script>

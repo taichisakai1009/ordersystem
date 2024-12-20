@@ -16,7 +16,9 @@ public interface ClerksRepository extends JpaRepository<ClerksEntity, Integer> {
 
 	Optional<ClerksEntity> findByClerkNumberAndPassword(Integer clerkNumber, String password);
 	
-	Optional<ClerksEntity> findByClerkNumber(Integer clerkNumber);
+//	Optional<ClerksEntity> findByClerkNumber(Integer clerkNumber);
+	
+	ClerksEntity findByClerkNumber(Integer clerkNumber);
 	
 	List<ClerksEntity> findByNameContaining(String name);
 	
@@ -31,5 +33,12 @@ public interface ClerksRepository extends JpaRepository<ClerksEntity, Integer> {
     void deleteByClerkId(Integer clerkId);
     
     boolean existsByClerkNumber(Integer clerkNumber); // 入力された店員番号と一致するデータがあったらtrue,無かったらfalse
+    
+    // clerk_number に一致する is_first_login を false に更新
+    @Transactional
+    @Modifying
+    @Query("UPDATE ClerksEntity c SET c.isFirstLogin = false WHERE c.clerkNumber = :clerkNumber")
+    int updateIsFirstLoginToFalseByClerkNumber(Integer clerkNumber);
+
 
 }

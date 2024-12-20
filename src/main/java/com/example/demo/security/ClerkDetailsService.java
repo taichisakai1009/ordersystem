@@ -24,10 +24,8 @@ public class ClerkDetailsService implements UserDetailsService {
     @Transactional // RolesEntityのclerksプロパティ（コレクション）を遅延ロードしようとした際にHibernateのセッションが閉じられており、データベースアクセスができなくなった。
     @Override      // @OneToManyにおける遅延ロードは、デフォルトで有効になっています。
     public UserDetails loadUserByUsername(String clerkNumber) throws UsernameNotFoundException {
-        ClerksEntity clerk = clerksRepository.findByClerkNumber(Integer.parseInt(clerkNumber))
-            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        ClerksEntity clerk = clerksRepository.findByClerkNumber(Integer.parseInt(clerkNumber));           
         session.setAttribute("clerk", clerk);
-        System.out.println("clerk:" + clerk);
         return new ClerkDetails(clerk);
     }
 }

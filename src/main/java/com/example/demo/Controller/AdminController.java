@@ -1,6 +1,7 @@
 package com.example.demo.Controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +13,7 @@ import com.example.demo.Repository.ClerksRepository;
 import com.example.demo.service.AdminService;
 import com.example.demo.service.ClerksService;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 
@@ -32,7 +34,6 @@ public class AdminController {
 		this.clerksRepository = clerksRepository;
 	}
 
-
 	// 店員情報の更新
 	@RequestMapping(path = "/clerkSelect", params = "update", method = RequestMethod.POST)
 	public void updateClerkDetails(@RequestBody ClerkDetailsDto dto) {
@@ -45,7 +46,7 @@ public class AdminController {
 	public String deleteByClerkId(Integer clerkId) {
 		adminService.deleteByClerkId(clerkId);
 		System.out.println("店員情報の削除。clerkId = " + clerkId);
-		return "admin/clerkSelect";
+		return "clerks/clerkSelect";
 	}
 
 	//　店員登録画面表示
@@ -64,10 +65,18 @@ public class AdminController {
 	// 店員の登録
 	@RequestMapping(path = "/clerkRegist", params = "regist")
 	public String registClerk(String name, Integer clerkNumber, String rawPassword, String mailAddress, String tel,
-			String startDateStr, Integer roleId) {
-		ClerksEntity clerksEntity = adminService.registClerk(name, clerkNumber, rawPassword, mailAddress, tel, startDateStr, roleId);
-		System.out.println("新規登録：" + clerksEntity);
-		return "admin/clerkRegist";
+			String startDateStr, Integer roleId, Model model) throws MessagingException {
+		boolean validationFlg = adminService.registValidationCheck(name, mailAddress, tel, model); // バリデーションチェック
+		if (!validationFlg) {
+			System.out.println("バリデーションエラー");
+			return "admin/clerkRegist";
+		} else {
+			ClerksEntity clerksEntity = adminService.registClerk(name, clerkNumber, rawPassword, mailAddress, tel,
+					startDateStr, roleId);
+			model.addAttribute("registComfirm", name+"さんの新規登録を行いました。");
+			System.out.println("新規登録：" + clerksEntity);
+			return "admin/clerkRegist";
+		}
 	}
 
 }

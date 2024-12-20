@@ -3,7 +3,6 @@ package com.example.demo.service;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,17 +32,17 @@ public class LoginService {
 	//		String hashedPassword = hash(password);
 	//		boolean loginFlg = clerksRepository
 	//				.findByClerkNumberAndPassword(clerkNumber, hashedPassword).isPresent();
-	//		return loginFlg;
+	//		return loginFlg;Optional<ClerksEntity>
 	//	}
 
 	public boolean doLogin(Integer clerkNumber, String password) {
 		// 社員番号から検索
-		Optional<ClerksEntity> clerksEntity = clerksRepository.findByClerkNumber(clerkNumber);
-		if (!(clerksEntity.isPresent())) {
+		ClerksEntity clerksEntity = clerksRepository.findByClerkNumber(clerkNumber);
+		if (clerksEntity == null) {
 			return false;
 		}
 
-		String hashPassword = clerksEntity.map(ClerksEntity::getPassword).orElse("");
+		String hashPassword = clerksEntity.getPassword();
 		// エンコードされたパスワードと入力されたパスワードを比較
 		return PasswordUtils.matchPassword(password, hashPassword);
 	}

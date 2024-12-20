@@ -50,7 +50,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 						.loginPage("/login/login?show=true").permitAll()
 						.loginProcessingUrl("/in") // 入力フォームのth:actionと分けなければいけない
 						//						.defaultSuccessUrl(new CustomAuthenticationSuccessHandler())
-						.successHandler(customAuthenticationSuccessHandler) // カスタム成功ハンドラを設定
+						.successHandler(customAuthenticationSuccessHandler) // カスタムハンドラを設定
 						.failureUrl("/login/login?show=true&error=true") // ログイン失敗後のリダイレクト先
 						.usernameParameter("clerkNumber")
 						.passwordParameter("password"))

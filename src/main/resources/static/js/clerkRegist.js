@@ -45,18 +45,16 @@ async function moveFocus(current) {
 	if (allInputsFilled) {
 
 		const duplicationFlg = await duplicationCheck(clerkNumber); // 店員番号の重複フラグを取得
-		if (duplicationFlg === false) {
+		if (!duplicationFlg) {
 			submitButton.style.display = "block";
 			duplicationMessage.style.display = "none";
+			document.getElementById('regist-date').value = getTodayStr(); // 今日の日付を文字列で埋め込む(yyyy-mm-dd)
+			document.getElementById('regist-num').value = clerkNumber; // hidden の値を埋め込む
+			document.getElementById('regist-password').value = generatePassword(12); // 12文字の初期パスワードを埋め込む
 		} else {
 			submitButton.style.display = "none";
 			duplicationMessage.style.display = "block";
 		}
-		document.getElementById('regist-date').value = getTodayStr(); // 今日の日付を文字列で埋め込む(yyyy-mm-dd)
-		document.getElementById('regist-num').value = clerkNumber; // hidden の値を埋め込む
-		const password = generatePassword(12);
-		document.getElementById('regist-password').value = password; // 12文字の初期パスワードを埋め込む
-		console.log("パスワード：" + password);
 	}
 }
 
@@ -81,6 +79,20 @@ async function duplicationCheck(clerkNumber) {
 function confirmAndSubmit(event) {
 	event.preventDefault(); // フォーム送信を一旦停止
 
+	// 氏名、メールアドレス、電話番号のエレメントを取得
+	const nameForm = document.getElementById('regist-form-name');
+	const mailForm = document.getElementById('regist-form-mail');
+	const telForm = document.getElementById('regist-form-tel');
+
+	let emptyFlg = nameForm.value.trim() === ''
+		|| mailForm.value.trim() === ''
+		|| telForm.value.trim() === '';
+
+	if (emptyFlg) {
+		alert("入力欄はすべて入力してください。");
+		return; // 処理を打ち切る
+	}
+
 	// 確認ダイアログを表示
 	const isConfirmed = confirm("新規登録を行います。よろしいですか？");
 	if (isConfirmed) {
@@ -99,8 +111,8 @@ function confirmAndSubmit(event) {
 		// フォームを送信
 		form.submit();
 
-		// 確認がOKの場合、完了ダイアログを表示
-		alert("新規登録を行いました。");
+		//		// 確認がOKの場合、完了ダイアログを表示
+		//		alert("新規登録を行いました。");
 	}
 }
 

@@ -181,7 +181,7 @@ function fetchClerksByName() {
 // 社員番号や電話番号など、複数の入力フィールドを使って分割して入力されたデータを1つにまとめる際に有効
 
 const digitInputs = document.querySelectorAll('input[id^="digit"]'); // NodeList
-function fetchClerksByNumber() {
+async function fetchClerksByNumber() {
 
 	// 6桁の数字を結合
 	const clerkNumber = Array.from(digitInputs) // NodeListを配列に変換
@@ -195,7 +195,7 @@ function fetchClerksByNumber() {
         </tr>
     `;
 
-	fetch(`/clerks/clerkSelect?numberSearch&clerkNumber=${clerkNumber}`, {
+	await fetch(`/clerks/clerkSelect?numberSearch&clerkNumber=${clerkNumber}`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
@@ -210,12 +210,14 @@ function fetchClerksByNumber() {
 			}
 			return response.json();
 		})
-		.then(clerks => {
+		.then(clerk => {
 			// テーブルボディをクリア
 			tableBody.innerHTML = '';
+			
+			console.log("clerk:" + clerk);
 
 			// 検索結果が空の場合
-			if (!clerks || clerks.length === 0) {
+			if (!clerk || clerk.clerkId === null) {
 				const noResultRow = `
                 <tr>
                     <td colspan="6" class="text-center">該当する従業員が見つかりませんでした</td>
@@ -224,11 +226,7 @@ function fetchClerksByNumber() {
 				tableBody.innerHTML = noResultRow;
 				return;
 			}
-
-			// 検索結果を表示
-			clerks.forEach(clerk => {
-				// nullチェックと安全な文字列変換
-				const row = `
+			const row = `
                 <tr>
                     <td style="display: none;">${clerk.clerkId || '未設定'}</td>
                     <td>${clerk.name || '未設定'}</td>
@@ -239,8 +237,7 @@ function fetchClerksByNumber() {
                     <td>${clerk.role.name || '未設定'}</td>
                 </tr>
             `;
-				tableBody.innerHTML += row;
-			});
+			tableBody.innerHTML += row;
 		})
 		.catch(error => {
 			console.error('検索エラー:', error);

@@ -1,11 +1,12 @@
 package com.example.demo.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import com.example.demo.Dto.SeeClerksDto;
 import com.example.demo.Dto.SeeOrdersDto;
@@ -29,10 +30,13 @@ public class ClerksService {
 
 	@Autowired
 	PassengersRepository passengersRepository;
-	
+
 	@Autowired
 	ClerksRepository clerksRepository;
-	
+
+	@Autowired
+	PasswordEncoder passwordEncoder;
+
 	// エンティティを元にDtoにセット List<PassengersEntity>→List<SeePassengersDto>
 	public List<SeePassengersDto> setSeePassengersDtoList(List<PassengersEntity> passengers) {
 		List<SeePassengersDto> seePassengersDtoList = new ArrayList<>();
@@ -92,27 +96,72 @@ public class ClerksService {
 		}
 		return seeClerksDtoList;
 	}
-	
-	public List<ClerksEntity> findClerksByNumber(Integer clerkNumber) {
-		return clerksRepository.findByClerkNumber(clerkNumber)
-				.map(Collections::singletonList) // OptionalをListに変換
-				.orElse(Collections.emptyList()); // 値が存在しない場合は空のリストを返す
+
+	public ClerksEntity findClerksByNumber(Integer clerkNumber) {
+		
+		ClerksEntity clerk = clerksRepository.findByClerkNumber(clerkNumber);
+		if(clerk == null) {
+			ClerksEntity Emptyclerk = new ClerksEntity();
+			return Emptyclerk;
+		}
+		return clerk;
 	}
 
 	public List<ClerksEntity> findByNameContaining(String name) {
 		return clerksRepository.findByNameContaining(name);
 	}
-// エンティティを元にDtoにセット List<DishesEntity>→List<SeeDishesDto>
-//	public List<SeeDishesDto> setSeeDishesDtoList(List<DishesEntity> dishes) {
-//		List<SeeDishesDto> seeDishesDtoList = new ArrayList<>();
-//		for (DishesEntity dish : dishes) {
-//			SeeDishesDto seeDishesDto = new SeeDishesDto();
-//			seeDishesDto.setDishId(dish.getDishId());
-//			seeDishesDto.setDishName(dish.getDishName());			
-//			seeDishesDto.setOrderNumber(dish.getOrderNumber());
-//			seeDishesDto.setPrice(dish.getPrice());
-//			seeDishesDto.setOnSaleFlg(dish.isOnSaleFlg());
-//		}
-//		return seeDishesDtoList;
-//	}
+
+	// パスワードの変更ができるか判定
+	public boolean changePassword(ClerksEntity clerk, String currentPassword, String newPassword,
+			String confirmPassword,
+			Model model) {
+		boolean changePasswordFlg = true;
+		if (!newPassword.equals(confirmPassword)) {
+			String mismatchError = "確認用パスワードと一致しません。";
+			model.addAttribute("mismatchError", mismatchError);
+			changePasswordFlg = false;
+		}
+		String hashPassword = clerk.getPassword();
+		if (!passwordEncoder.matches(currentPassword, hashPassword)) {
+			String isNotCurrentPassword = "現在のパスワードが間違えています。";
+			model.addAttribute("isNotCurrentPassword", isNotCurrentPassword);
+			changePasswordFlg = false;
+		}
+		if (passwordEncoder.matches(newPassword, hashPassword)) {
+			String isNotNewPassword = "新しいパスワードは現在のパスワードと異なる必要があります。";
+			model.addAttribute("isNotNewPassword", isNotNewPassword);
+			changePasswordFlg = false;
+		}
+		if (changePasswordFlg) {
+			clerk.setPassword(passwordEncoder.encode(newPassword));
+			clerksRepository.save(clerk);
+			String changePasswordConfirm = "パスワード変更が完了しました。";
+			model.addAttribute("changePasswordConfirm", changePasswordConfirm);
+		}
+		return changePasswordFlg;
+	}
+	
+	// 店員番号をもとに、is_first_loginフラグをオフにする
+	public void updateIsFirstLoginToFalseByClerkNumber(Integer clerkNumber) {
+		clerksRepository.updateIsFirstLoginToFalseByClerkNumber(clerkNumber);
+	}
+	// 店員番号をもとにClerkモデルをセットする
+	public void addClerkModel(Integer clerkNumber, Model model) {
+	ClerksEntity clerk = clerksRepository.findByClerkNumber(clerkNumber);
+	model.addAttribute("clerk", clerk);
+	}
+
+	// エンティティを元にDtoにセット List<DishesEntity>→List<SeeDishesDto>
+	//	public List<SeeDishesDto> setSeeDishesDtoList(List<DishesEntity> dishes) {
+	//		List<SeeDishesDto> seeDishesDtoList = new ArrayList<>();
+	//		for (DishesEntity dish : dishes) {
+	//			SeeDishesDto seeDishesDto = new SeeDishesDto();
+	//			seeDishesDto.setDishId(dish.getDishId());
+	//			seeDishesDto.setDishName(dish.getDishName());			
+	//			seeDishesDto.setOrderNumber(dish.getOrderNumber());
+	//			seeDishesDto.setPrice(dish.getPrice());
+	//			seeDishesDto.setOnSaleFlg(dish.isOnSaleFlg());
+	//		}
+	//		return seeDishesDtoList;
+	//	}
 }

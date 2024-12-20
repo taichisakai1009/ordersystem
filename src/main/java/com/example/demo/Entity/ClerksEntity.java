@@ -44,4 +44,7 @@ public class ClerksEntity {
     @ManyToOne(fetch = FetchType.EAGER) // 即時ロードで権限を取得
     @JoinColumn(name = "role_id", nullable = false) // 外部キー「clerk_roles.role_id」
     private RolesEntity role;
+    
+    @Column(name = "is_first_login", nullable = false)
+    private Boolean isFirstLogin = true; // 登録時デフォルトでオンに設定
 }

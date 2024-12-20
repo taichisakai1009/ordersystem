@@ -7,8 +7,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +28,7 @@ import com.example.demo.Repository.DishesRepository;
 import com.example.demo.Repository.OrderDetailsRepository;
 import com.example.demo.Repository.OrdersRepository;
 import com.example.demo.Repository.PassengersRepository;
+import com.example.demo.TwoFactorAuth.TotpService;
 import com.example.demo.service.ChoiceService;
 import com.example.demo.service.ClerksService;
 
@@ -41,9 +40,12 @@ public class ClerksController {
 
 	@Autowired
 	ChoiceService choiceService;
-	
+
 	@Autowired
 	ClerksService clerksService;
+	
+	@Autowired
+	TotpService totpService;
 
 	@Autowired
 	OrderDetailsRepository orderDetailsRepository;
@@ -53,34 +55,36 @@ public class ClerksController {
 
 	@Autowired
 	PassengersRepository passengersRepository;
-	
+
 	@Autowired
 	DishesRepository dishesRepository;
-	
+
 	@Autowired
 	ClerksRepository clerksRepository;
-	
+
 	@Autowired
 	HttpSession session;
-	
-    // ホーム画面表示
+
+	// ホーム画面表示
 	@RequestMapping(path = "/home")
 	public String showAdminPage(Model model) {
 		ClerksEntity clerk = (ClerksEntity) session.getAttribute("clerk");
+		clerk.setIsFirstLogin(false);
 		model.addAttribute("clerk", clerk);
+		clerksRepository.save(clerk);
 		return "clerks/home";
 	}
 
 	// 利用客選択画面表示
-//	@PreAuthorize("hasRole('Regular', 'Manager')")
+	//	@PreAuthorize("hasRole('Regular', 'Manager')")
 	@RequestMapping(path = "/choice", params = "show")
 	public String showChoiceView(Model model) {
 
 		List<PassengersEntity> passengers = passengersRepository.findAll();
 		List<SeePassengersDto> passengersList = clerksService.setSeePassengersDtoList(passengers);
-		
+
 		Integer passengerCount = passengersList.size();
-		
+
 		model.addAttribute("passengersList", passengersList);
 		model.addAttribute("passengerCount", passengerCount);
 
@@ -94,7 +98,7 @@ public class ClerksController {
 	public String showOrders(Integer passengerId, Model model, HttpSession session) {
 		List<OrdersEntity> orders = ordersRepository.findByPassengerId(passengerId);
 		List<SeeOrdersDto> ordersList = clerksService.setSeeOrdersDtoList(orders);
-		System.out.println("注文データ："+ordersList);
+		System.out.println("注文データ：" + ordersList);
 		model.addAttribute("orders", ordersList);
 		model.addAttribute("passengerId", passengerId);
 		return "clerks/choiceOrder";
@@ -107,13 +111,13 @@ public class ClerksController {
 		List<OrderDetailsEntity> orderDetails = orderDetailsRepository.findByOrderId(orderId);
 		PassengersEntity passenger = passengersRepository.findByPassengerId(passengerId);
 		boolean eatingFlg = passenger.isEatingFlg();
-		System.out.println("注文詳細データ："+orderDetails);
+		System.out.println("注文詳細データ：" + orderDetails);
 		model.addAttribute("orderDetails", orderDetails);
 		model.addAttribute("passengerId", passengerId);
 		model.addAttribute("eatingFlg", eatingFlg);
 		return "clerks/setDelivered";
 	}
-	
+
 	// お届け済にする。
 	@RequestMapping(path = "/delivered", params = "delivered")
 	@ResponseBody // Ajaxレスポンスを返すために追加
@@ -154,7 +158,7 @@ public class ClerksController {
 					});
 		}
 	}
-	
+
 	// 同じ注文IDの商品がすべて配達済みになったらフラグオフ。
 	@RequestMapping(path = "/delivered", params = "orders")
 	@ResponseBody // Ajaxレスポンスを返すために追加
@@ -198,7 +202,7 @@ public class ClerksController {
 		}
 		return ResponseEntity.ok(passengerId);
 	}
-	
+
 	// 商品一覧画面
 	@RequestMapping(path = "/dishes")
 	public String dishes(Model model) {
@@ -208,27 +212,27 @@ public class ClerksController {
 		model.addAttribute("dishesCount", dishesCount);
 		return "clerks/dishes";
 	}
-	
+
 	//	トグルボタンで提供フラグを操作
-	@RequestMapping(path="/dishes", params="onSale")
+	@RequestMapping(path = "/dishes", params = "onSale")
 	@ResponseBody
 	public ResponseEntity<Void> changeSaleStatus(@RequestParam("dishId") Integer dishId) {
-	    DishesEntity dish = dishesRepository.findById(dishId).orElseThrow();
-	    dish.setOnSaleFlg(dish.isOnSaleFlg() == true ? false : true); // 状態を切り替える
-	    dishesRepository.save(dish);
-	    System.out.println(dish.getDishName()+"、提供フラグ："+dish.isOnSaleFlg());
-	    return ResponseEntity.ok().build();
+		DishesEntity dish = dishesRepository.findById(dishId).orElseThrow();
+		dish.setOnSaleFlg(dish.isOnSaleFlg() == true ? false : true); // 状態を切り替える
+		dishesRepository.save(dish);
+		System.out.println(dish.getDishName() + "、提供フラグ：" + dish.isOnSaleFlg());
+		return ResponseEntity.ok().build();
 	}
-	
+
 	// 店員一覧画面表示
-	@RequestMapping(path="/clerks")
+	@RequestMapping(path = "/clerks")
 	public String showClerks(Model model) {
 		List<ClerksEntity> clerksEntity = clerksRepository.findAll();
 		List<SeeClerksDto> clerks = clerksService.setSeeClerksDtoList(clerksEntity);
 		model.addAttribute("clerks", clerks);
 		return "clerks/clerks";
 	}
-	
+
 	// 店員選択画面表示
 	@RequestMapping(path = "/clerkSelect", params = "show")
 	public String showClerkSelect() {
@@ -239,7 +243,7 @@ public class ClerksController {
 	// 店員番号で従業員を検索
 	@RequestMapping(path = "/clerkSelect", params = "numberSearch")
 	@ResponseBody // JSONレスポンスを返すために追加
-	public List<ClerksEntity> searchClerksByNumber(@RequestParam Integer clerkNumber) {
+	public ClerksEntity searchClerksByNumber(@RequestParam Integer clerkNumber) {
 		return clerksService.findClerksByNumber(clerkNumber);
 	}
 
@@ -267,21 +271,65 @@ public class ClerksController {
 		return "clerks/clerkManagement";
 	}
 
-	// ログイン成功時のメソッド
-	@RequestMapping(path = "/login")
-	public String test(Model model, HttpSession session) {
-		System.out.println("ログイン成功");
-		// ログインじょうたい
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		boolean loginFlg = authentication != null
-				&& authentication.isAuthenticated()
-				&& !"anonymousUser".equals(authentication.getName());
-		session.setAttribute("loginFlg", loginFlg);
-		System.out.println("authentication：" + authentication);
-		OrderRecordDtoList orderRecordDtoList = (OrderRecordDtoList) session.getAttribute("orderRecord");
-		model.addAttribute("orderRecordDtoList", orderRecordDtoList);
-		return "clerks/setDelivered";
+	// プロフィール表示
+	@RequestMapping(path = "/clerkManagement", params = "profile")
+	public String showProfile(Model model) {
+		ClerksEntity clerk = (ClerksEntity) session.getAttribute("clerk");
+		model.addAttribute("clerk", clerk);
+		model.addAttribute("clerkId", clerk.getClerkId());
+		model.addAttribute("name", clerk.getName());
+		model.addAttribute("clerkNumber", clerk.getClerkNumber());
+		model.addAttribute("mailAddress", clerk.getMailAddress());
+		model.addAttribute("tel", clerk.getTel());
+		model.addAttribute("startDate", clerk.getStartDate());
+		model.addAttribute("roleName", clerk.getRole().getName());
+		model.addAttribute("profile", "profile");
+		return "clerks/clerkManagement";
 	}
+
+	// パスワード変更画面表示
+	@RequestMapping(path = "/changePassword", params = "show")
+	public String showChangePassword(Model model) {
+		ClerksEntity clerk = (ClerksEntity) session.getAttribute("clerk");
+		model.addAttribute("clerk", clerk);
+		return "clerks/changePassword";
+	}
+
+	// パスワード再設定
+	@RequestMapping(path = "/changePassword", params = "change")
+	public String changePassword(String currentPassword, String newPassword, String confirmPassword, Model model) {
+		ClerksEntity clerk = (ClerksEntity) session.getAttribute("clerk");
+		clerksService.changePassword(clerk, currentPassword, newPassword, confirmPassword, model);
+		return showChangePassword(model);
+	}
+
+//	// ログイン成功時のメソッド
+//	@RequestMapping(path = "/login")
+//	public String test(Model model, HttpSession session) {
+//		System.out.println("ログイン成功");
+//		// ログインじょうたい
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		boolean loginFlg = authentication != null
+//				&& authentication.isAuthenticated()
+//				&& !"anonymousUser".equals(authentication.getName());
+//		session.setAttribute("loginFlg", loginFlg);
+//		System.out.println("authentication：" + authentication);
+//		OrderRecordDtoList orderRecordDtoList = (OrderRecordDtoList) session.getAttribute("orderRecord");
+//		model.addAttribute("orderRecordDtoList", orderRecordDtoList);
+//		return "clerks/setDelivered";
+//	}
+//	
+//	@GetMapping("/two-factor-auth")
+//	public String twoFactorAuthPage(Model model, Authentication authentication) {
+//	    String username = authentication.getName();
+//	    String secretKey = totpService.generateSecretKey(username);
+//
+//	    String qrCodeUrl = totpService.getQRCodeUrl(username, secretKey);
+//	    model.addAttribute("qrCodeUrl", qrCodeUrl);
+//
+//	    return "twoFactorAuthPage";
+//	}
+
 
 	// メニューに戻る
 	@RequestMapping(path = "/back")
@@ -289,6 +337,5 @@ public class ClerksController {
 		System.out.println("メニューに戻る");
 		return "order/choice";
 	}
-	
-	
+
 }
