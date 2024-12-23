@@ -69,9 +69,7 @@ public class ClerksController {
 	@RequestMapping(path = "/home")
 	public String showAdminPage(Model model) {
 		ClerksEntity clerk = (ClerksEntity) session.getAttribute("clerk");
-		clerk.setIsFirstLogin(false);
 		model.addAttribute("clerk", clerk);
-		clerksRepository.save(clerk);
 		return "clerks/home";
 	}
 

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>メールアドレス送信画面</title>
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+	<!-- HTMLにCSRFトークンを埋め込む -->
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+</head>
+<div class="container">
+	<div class="margin">
+		<a href="/login/login?show">ログイン画面に戻る</a>
+	</div>
+	<div class="sub-container">
+		<div class="margin">
+			<form id="sendEmail" th:action="@{/login/sendEmail}">
+				<lavel for="emailBox">メールアドレスを記入：</lavel>
+				<input type="text" id="emailBox" name="email">
+				<button type="submit" name="send">メールを送信</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+<body>
+
+</body>
+
+</html>

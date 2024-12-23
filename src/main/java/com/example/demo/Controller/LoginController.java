@@ -57,7 +57,6 @@ public class LoginController {
 	public String showVerificationPage(HttpSession session) throws MessagingException {
 		// QRコードのメール送信処理
 		twoFactorAuthService.getQrCode(session);
-
 		return "login/twoStepVerification";
 	}
 			
@@ -73,5 +72,19 @@ public class LoginController {
 	public String back() {
 		System.out.println("注文画面に戻る");
 		return "order/choice";
+	}
+	
+	// パスワードを忘れた人
+	@RequestMapping(path = "/sendEmail", params = "show")
+	public String showSendEmailPage() {
+		return "login/sendEmail";
+	}
+	
+	// パスワード再設定用のリンクを載せたメールを送信
+	@RequestMapping(path = "/sendEmail", params = "send")
+	public String sendResetPassEmail(String email) throws MessagingException {
+		emailService.sendSimpleMessage(email, "パスワード再設定用リンク", "");
+		System.out.println(email+"へメール送信");
+		return "login/sendEmail";
 	}
 }

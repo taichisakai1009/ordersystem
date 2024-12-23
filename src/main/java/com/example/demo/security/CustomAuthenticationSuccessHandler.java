@@ -33,15 +33,20 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		String username = user.getUsername();
 		Integer clerkNumber = Integer.parseInt(username); // 店員番号が文字になってるのでIntegerに変換
 		ClerksEntity clerk = clerksRepository.findByClerkNumber(clerkNumber);
+		boolean isFirstLogin = clerk.getIsFirstLogin();// 現在の認証情報を取得
+		
 		if (clerk != null) {
-			if (clerk.getIsFirstLogin()) { // 初回ログインの場合
-				// セッションにユーザー名を保存
-		        HttpSession session = request.getSession();
+			if (isFirstLogin) { // 初回ログインの場合
+				System.out.println("初回ログイン");
+				
+		        HttpSession loginSession = request.getSession();
+		        loginSession.invalidate(); // セッションを無効化、ログイン情報の解除
+		        
+		        HttpSession session = request.getSession(); // この新しいセッションは、前のセッションとは異なるセッションIDを持っています
+		        
 		        session.setAttribute("authenticatedUsername", username);
+		        session.setAttribute("isFirstLogin", isFirstLogin);
 		        session.setAttribute("emailAddress", clerk.getMailAddress());
-//				clerk.setIsFirstLogin(false);
-//				clerksRepository.save(clerk);
-//				&username=" + URLEncoder.encode(username, "UTF-8")
 				response.sendRedirect("/login/twoStepVerification?show");
 			} else {
 				response.sendRedirect("/clerks/home");

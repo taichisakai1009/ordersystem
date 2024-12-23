@@ -66,6 +66,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 						.requestMatchers("/title/**").permitAll() // タイトルに戻る
 						.requestMatchers("/order/**").permitAll()
 						.requestMatchers("/login/**").permitAll()
+						.requestMatchers("/two-factor-auth/**").permitAll()
 						.requestMatchers("/css/**").permitAll() // css
 						.requestMatchers("/js/**").permitAll() // js
 						.requestMatchers("/clerks/**").authenticated() // /clerks/** パスは認証が必要

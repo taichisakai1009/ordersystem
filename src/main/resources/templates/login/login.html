@@ -12,18 +12,23 @@
 
 <body>
 	<div class="container">
-		<form id="loginform" th:action="@{/title/title}" method="POST">
-
-			<button type="submit" name="title">戻る</button>
-		</form>
-		<form th:action="@{/in}" method="POST">
-			<input type="number" name="clerkNumber" placeholder="店員番号を入力" autofocus>
-			<input type="password" name="password" placeholder="パスワードを入力">
-			<button type="submit">ログイン</button>
-		</form>
-
-		<div th:if="${param.error}">
-			<p>ログインに失敗しました。ユーザー名またはパスワードを確認してください。</p>
+		<div class="margin">
+			<a href="/title/title?title">タイトルに戻る</a>
+		</div>
+		<div class="sub-container">
+			<div class="margin">
+				<form th:action="@{/in}" method="POST">
+					<input type="number" name="clerkNumber" placeholder="店員番号を入力" autofocus>
+					<input type="password" name="password" placeholder="パスワードを入力">
+					<button type="submit">ログイン</button>
+				</form>
+				<form th:action="@{/login/sendEmail?show}" method="POST">
+					<button type="submit" id="showFogotPassPage">パスワードを忘れた方はこちら</button>
+				</form>
+			</div>
+			<div th:if="${param.error}">
+				<p>ログインに失敗しました。ユーザー名またはパスワードを確認してください。</p>
+			</div>
 		</div>
 	</div>
 </body>

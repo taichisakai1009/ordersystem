@@ -49,11 +49,8 @@
 		</form>
 <!--		 sec:authorize="!isAuthenticated()"-->
 		<div class="link-button">
-			<div class="margin" id="show-login" sec:authorize="!isAuthenticated()">
-				<a href="/login/login?show">店員の方はこちら</a>
-			</div>
-			<div class="margin" id="show-passensior" sec:authorize="isAuthenticated()">
-				<a href="/clerks/home">ホーム画面へ</a>
+			<div class="margin" id="show-passensior">
+				<a href="/clerks/home">店員の方はこちら</a>
 			</div>
 		</div>
 	</div>

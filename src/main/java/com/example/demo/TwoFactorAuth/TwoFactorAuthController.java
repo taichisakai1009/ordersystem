@@ -1,11 +1,13 @@
 package com.example.demo.TwoFactorAuth;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.demo.Entity.ClerksEntity;
 import com.example.demo.service.ClerksService;
 
 import jakarta.mail.MessagingException;
@@ -24,6 +26,8 @@ public class TwoFactorAuthController {
 	private TwoFactorAuthService twoFactorAuthService;
 	@Autowired
 	private ClerksService clerksservice;
+	@Autowired
+	private UserDetailsService userDetailsService;
 
 	/**
 	 * QRコード画像を生成して返すエンドポイント
@@ -47,9 +51,16 @@ public class TwoFactorAuthController {
 	public String verification(String code, Model model, HttpSession session) {
 		boolean verifyFlg = twoFactorAuthService.verification(code, session);
 		if (verifyFlg) {
+			System.out.println("確認コード認証");
+			
 			String username = (String) session.getAttribute("authenticatedUsername");
 			Integer clerkNumber = Integer.parseInt(username);
-			clerksservice.addClerkModel(clerkNumber, model);
+			ClerksEntity clerk = clerksservice.findClerksByNumber(clerkNumber);			
+			session.setAttribute("clerk", clerk);
+			model.addAttribute("clerk", clerk);
+			model.addAttribute("changePassMessage", true);
+			
+			twoFactorAuthService.setLoginByClerks(clerk, session); // ログイン情報をセッションに追加
 			clerksservice.updateIsFirstLoginToFalseByClerkNumber(clerkNumber); // 初回ログインフラグをオフ
 			return "clerks/home";
 		} else {

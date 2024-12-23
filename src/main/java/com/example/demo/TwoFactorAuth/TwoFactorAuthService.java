@@ -1,8 +1,13 @@
 package com.example.demo.TwoFactorAuth;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.Entity.ClerksEntity;
+import com.example.demo.security.ClerkDetails;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.PdfService;
 
@@ -17,7 +22,7 @@ public class TwoFactorAuthService {
 
 	@Autowired
 	private EmailService emailService;
-	
+
 	@Autowired
 	private PdfService pdfService;
 
@@ -40,12 +45,15 @@ public class TwoFactorAuthService {
 
 		// QRコードURLを基にQRコード画像のバイナリデータを生成
 		byte[] qrCodeBytes = QRCodeGenerator.generateQRCodeImage(qrCodeUrl, 300, 300);
-		
+
 		// PDF形式のバイナリデータに変換
 		byte[] qrCodePdfBytes = pdfService.sendByteAsPdf(qrCodeBytes);
 
+		// メールアドレスを取得
+		String emailAddress = (String) session.getAttribute("emailAddress");
+		// sakait@analix.co.jp
 		// メール送信
-		emailService.sendFileMessage("sakait@analix.co.jp",
+		emailService.sendFileMessage(emailAddress,
 				"確認コード用QRコードの告知",
 				"以下のQRコードを認証アプリでスキャンしてください。",
 				"QRCode.pdf", // ファイル名の形式が正しくないと表示されない
@@ -60,10 +68,18 @@ public class TwoFactorAuthService {
 			return false;
 		}
 		boolean verifyFlg = totpService.verifyCode(secretKey, code);
-//		System.out.println("認証結果：" + verifyFlg);
+		//		System.out.println("認証結果：" + verifyFlg);
 		//		session.removeAttribute("secretKey");
 		return verifyFlg;
 	}
 	
-	
+	public void setLoginByClerks(ClerksEntity clerk, HttpSession session) {
+        ClerkDetails clerkDetails = new ClerkDetails(clerk); // ユーザー情報の取得
+        UsernamePasswordAuthenticationToken newAuthentication = new UsernamePasswordAuthenticationToken(
+        		clerkDetails, null, clerkDetails.getAuthorities()); // ログイン情報の再設定
+        SecurityContextHolder.getContext().setAuthentication(newAuthentication); // ログイン情報の保存
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY
+        		, SecurityContextHolder.getContext()); // セッションに SecurityContext を保存
+	}
+
 }
