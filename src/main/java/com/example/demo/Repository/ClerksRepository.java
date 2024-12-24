@@ -34,6 +34,17 @@ public interface ClerksRepository extends JpaRepository<ClerksEntity, Integer> {
     
     boolean existsByClerkNumber(Integer clerkNumber); // 入力された店員番号と一致するデータがあったらtrue,無かったらfalse
     
+    boolean existsByMailAddress(String mailAddress); // 入力されたメールアドレスと一致するデータがあったらtrue,なかったらfalse
+    
+    // @Queryでクエリ文を明示しないと、カラムをすべて検索してエンティティ型を返してしまった。
+    @Query("SELECT c.mailAddress FROM ClerksEntity c WHERE c.clerkId = :clerkId")
+    String findMailAddressByClerkId(Integer clerkId); // idに応じてメールアドレスを取得
+    
+    @Transactional
+    @Modifying
+    @Query("UPDATE ClerksEntity c SET c.password = :password WHERE c.mailAddress = :mailAddress")
+    int updatePasswordByMailAddress(@Param("password") String password, @Param("mailAddress") String mailAddress);
+    
     // clerk_number に一致する is_first_login を false に更新
     @Transactional
     @Modifying

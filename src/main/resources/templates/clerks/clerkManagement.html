@@ -57,13 +57,15 @@
 			<button type="button" th:if="${clerk.role.id == 3}" id="changeClerkDetails" class="disabled-button"
 				onclick="changeClerkDetails()" disabled>編集内容に更新</button>
 			<form id="showChangePassword" th:action="@{/clerks/changePassword}">
-				<button type="submit" th:if="${profile != null}" id="show-password-page" name="show">パスワード変更はこちら</button>
+				<button type="submit" th:if="${profile != null}" id="show-password-page"
+					name="show">パスワード変更はこちら</button>
 			</form>
 			<form id="delete-clerk" th:action="@{/admin/clerkSelect}" onsubmit="confirmDelete(event)">
-				<input type="hidden" id="clerkIdHidden" name="clerkId" th:value="${clerkId}" readonly>
+				<!--				<input type="hidden" id="clerkIdHidden" name="clerkId" th:value="${clerkId}" readonly>-->
 				<button type="submit" th:if="${clerk.clerkId != clerkId && clerk.role.id == 3}" id="delete-clerk-button"
 					class="delete-button" name="delete">このユーザーを削除</button>
 			</form>
+			<input type="hidden" id="clerkIdHidden" name="clerkId" th:value="${clerkId}" readonly>
 		</div>
 
 	</div>

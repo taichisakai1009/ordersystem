@@ -51,15 +51,15 @@ public class TwoFactorAuthController {
 	public String verification(String code, Model model, HttpSession session) {
 		boolean verifyFlg = twoFactorAuthService.verification(code, session);
 		if (verifyFlg) {
-			System.out.println("確認コード認証");
-			
+
 			String username = (String) session.getAttribute("authenticatedUsername");
 			Integer clerkNumber = Integer.parseInt(username);
-			ClerksEntity clerk = clerksservice.findClerksByNumber(clerkNumber);			
+			System.out.println("確認コード認証、店員番号：" + clerkNumber);
+			ClerksEntity clerk = clerksservice.findClerksByNumber(clerkNumber);
 			session.setAttribute("clerk", clerk);
 			model.addAttribute("clerk", clerk);
 			model.addAttribute("changePassMessage", true);
-			
+
 			twoFactorAuthService.setLoginByClerks(clerk, session); // ログイン情報をセッションに追加
 			clerksservice.updateIsFirstLoginToFalseByClerkNumber(clerkNumber); // 初回ログインフラグをオフ
 			return "clerks/home";

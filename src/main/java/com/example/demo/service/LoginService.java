@@ -5,17 +5,24 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import com.example.demo.Entity.ClerksEntity;
 import com.example.demo.Repository.ClerksRepository;
 import com.example.demo.utils.PasswordUtils;
+
+import jakarta.servlet.http.HttpSession;
 
 @Service
 public class LoginService {
 
 	@Autowired
 	private ClerksRepository clerksRepository;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	// SHA-256 ハッシュ化
 	public static String hash(String password) throws NoSuchAlgorithmException {
@@ -45,5 +52,25 @@ public class LoginService {
 		String hashPassword = clerksEntity.getPassword();
 		// エンコードされたパスワードと入力されたパスワードを比較
 		return PasswordUtils.matchPassword(password, hashPassword);
+	}
+
+	public boolean resetPassword(String newPassword, String confirmNewPassword, HttpSession session, Model model) {
+		boolean resetPasswordFlg = true;
+		if (!newPassword.equals(confirmNewPassword)) {
+			System.out.println("確認用パスワードと一致しません。");
+			String mismatchError = "確認用パスワードと一致しません。";
+			model.addAttribute("mismatchError", mismatchError);
+			resetPasswordFlg = false;
+		} else {
+			String email = (String) session.getAttribute("email"); // null
+			System.out.println("パスワードを再設定します。email=" + email);
+			
+			String hashPassword = passwordEncoder.encode(newPassword);
+			clerksRepository.updatePasswordByMailAddress(hashPassword, email);
+
+			String resetConfirm = "パスワード再設定が完了しました。";
+			model.addAttribute("resetConfirm", resetConfirm);
+		}
+		return resetPasswordFlg;
 	}
 }

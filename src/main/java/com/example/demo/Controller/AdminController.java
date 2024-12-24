@@ -1,5 +1,9 @@
 package com.example.demo.Controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,8 +40,36 @@ public class AdminController {
 
 	// 店員情報の更新
 	@RequestMapping(path = "/clerkSelect", params = "update", method = RequestMethod.POST)
-	public void updateClerkDetails(@RequestBody ClerkDetailsDto dto) {
-		adminService.updateClerkDetails(dto.getClerkId(), dto.getName(), dto.getMailAddress(), dto.getTel());
+	@ResponseBody
+	public ResponseEntity<Map<String, String>> updateClerkDetails(@RequestBody ClerkDetailsDto dto) {
+		Integer clerkId = dto.getClerkId();
+		String myMailAddress = clerksService.getMailAddressByClerkId(clerkId);
+		String name = dto.getName();
+		String mailAddress = dto.getMailAddress();
+		String tel = dto.getTel();
+		
+		Map<String, String> response = new HashMap<>();
+		boolean addressDuplication = !mailAddress.equals(myMailAddress) && adminService.existsByMailAddress(mailAddress);
+
+		if (addressDuplication) {
+			response.put("message", "このメールアドレスはすでに使われています。");
+		} else {
+			adminService.updateClerkDetails(clerkId, name, mailAddress, tel);
+			ClerksEntity clerk = (ClerksEntity) session.getAttribute("clerk"); // セッション内容の更新
+			clerk.setName(name);
+			clerk.setMailAddress(mailAddress);
+			clerk.setTel(tel);
+			session.setAttribute("clerk", clerk);
+			response.put("message", "内容を更新しました。");
+		}
+		System.out.println("response：" + response);
+		return ResponseEntity.ok(response);
+	}
+
+	public ResponseEntity<?> test() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put(null, null);
+		return ResponseEntity.ok(null);
 	}
 
 	// 店員情報の削除
@@ -66,14 +98,18 @@ public class AdminController {
 	@RequestMapping(path = "/clerkRegist", params = "regist")
 	public String registClerk(String name, Integer clerkNumber, String rawPassword, String mailAddress, String tel,
 			String startDateStr, Integer roleId, Model model) throws MessagingException {
+		boolean addressDuplication = adminService.existsByMailAddress(mailAddress);
 		boolean validationFlg = adminService.registValidationCheck(name, mailAddress, tel, model); // バリデーションチェック
-		if (!validationFlg) {
+		if (addressDuplication) {
+			model.addAttribute("emailDupplication", "このメールアドレスはすでに使われています。");
+			return "admin/clerkRegist";
+		} else if (!validationFlg) {
 			System.out.println("バリデーションエラー");
 			return "admin/clerkRegist";
 		} else {
 			ClerksEntity clerksEntity = adminService.registClerk(name, clerkNumber, rawPassword, mailAddress, tel,
 					startDateStr, roleId);
-			model.addAttribute("registComfirm", name+"さんの新規登録を行いました。");
+			model.addAttribute("registComfirm", name + "さんの新規登録を行いました。");
 			System.out.println("新規登録：" + clerksEntity);
 			return "admin/clerkRegist";
 		}

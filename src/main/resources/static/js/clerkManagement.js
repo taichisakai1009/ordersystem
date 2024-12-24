@@ -62,11 +62,13 @@ function changeClerkDetails() {
 		})
 			.then(response => {
 				if (response.ok) {
-					window.location.href = "/admin/clerkSelect?show=true"; // リダイレクト先を指定
-					return response.text();
+					return response.json(); // JSON形式のレスポンスをjsで使えるようにする
 				} else {
 					throw new Error('Failed to update clerk details');
 				}
+			})
+			.then(data => {
+				alert(data.message); // メッセージを表示
 			})
 			.catch(error => {
 				console.error('Error:', error);

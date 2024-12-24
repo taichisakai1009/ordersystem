@@ -40,6 +40,7 @@ public class AdminService {
 
 	public void updateClerkDetails(Integer clerkId, String name, String mailAddress, String tel) {
 		clerksRepository.updateClerkDetails(clerkId, name, mailAddress, tel);
+		
 	}
 
 	public void deleteByClerkId(Integer clerkId) {
@@ -96,6 +97,11 @@ public class AdminService {
             // 異なる桁数の場合（エラー処理）
             throw new IllegalArgumentException("電話番号は10桁または11桁である必要があります");
         }
+    }
+    
+    // 登録するメールアドレスに重複がないか判定する
+    public boolean existsByMailAddress(String mailAddress) {
+    	return clerksRepository.existsByMailAddress(mailAddress);
     }
 
 	// 店員情報の登録を行う

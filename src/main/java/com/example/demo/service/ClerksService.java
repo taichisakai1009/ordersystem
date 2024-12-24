@@ -98,9 +98,9 @@ public class ClerksService {
 	}
 
 	public ClerksEntity findClerksByNumber(Integer clerkNumber) {
-		
+
 		ClerksEntity clerk = clerksRepository.findByClerkNumber(clerkNumber);
-		if(clerk == null) {
+		if (clerk == null) {
 			ClerksEntity Emptyclerk = new ClerksEntity();
 			return Emptyclerk;
 		}
@@ -140,15 +140,26 @@ public class ClerksService {
 		}
 		return changePasswordFlg;
 	}
-	
+
 	// 店員番号をもとに、is_first_loginフラグをオフにする
 	public void updateIsFirstLoginToFalseByClerkNumber(Integer clerkNumber) {
 		clerksRepository.updateIsFirstLoginToFalseByClerkNumber(clerkNumber);
 	}
+
 	// 店員番号をもとにClerkモデルをセットする
 	public void addClerkModel(Integer clerkNumber, Model model) {
-	ClerksEntity clerk = clerksRepository.findByClerkNumber(clerkNumber);
-	model.addAttribute("clerk", clerk);
+		ClerksEntity clerk = clerksRepository.findByClerkNumber(clerkNumber);
+		model.addAttribute("clerk", clerk);
+	}
+
+	// メールアドレスと一致するデータがあるか否か
+	public boolean existsByMailAddress(String mailAddress) {
+		return clerksRepository.existsByMailAddress(mailAddress);
+	}
+	
+	//　id を元にメールアドレスを取得
+	public String getMailAddressByClerkId(Integer clerkId) {
+		return clerksRepository.findMailAddressByClerkId(clerkId);
 	}
 
 	// エンティティを元にDtoにセット List<DishesEntity>→List<SeeDishesDto>
