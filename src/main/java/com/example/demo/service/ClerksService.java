@@ -107,6 +107,25 @@ public class ClerksService {
 		return clerk;
 	}
 
+	public ClerksEntity findByMailaddress(String mailaddress) {
+
+		ClerksEntity clerk = clerksRepository.findByMailAddress(mailaddress);
+//		if (clerk == null) {
+//			ClerksEntity Emptyclerk = new ClerksEntity();
+//			return Emptyclerk;
+//		}
+		return clerk;
+	}
+
+	public ClerksEntity findByClerkId(Integer clerkId) {
+		ClerksEntity clerk = clerksRepository.findByClerkId(clerkId);
+		if (clerk == null) {
+			ClerksEntity Emptyclerk = new ClerksEntity();
+			return Emptyclerk;
+		}
+		return clerk;
+	}
+
 	public List<ClerksEntity> findByNameContaining(String name) {
 		return clerksRepository.findByNameContaining(name);
 	}
@@ -156,10 +175,19 @@ public class ClerksService {
 	public boolean existsByMailAddress(String mailAddress) {
 		return clerksRepository.existsByMailAddress(mailAddress);
 	}
-	
+
 	//　id を元にメールアドレスを取得
 	public String getMailAddressByClerkId(Integer clerkId) {
 		return clerksRepository.findMailAddressByClerkId(clerkId);
+	}
+
+	// メールアドレスをもとにidを取得
+	public Integer findClerkIdByMailAddress(String mailAddress) {
+		Integer clerkId = clerksRepository.findClerkIdByMailAddress(mailAddress);
+		if (clerkId == null) {
+			return 0;
+		}
+		return clerkId;
 	}
 
 	// エンティティを元にDtoにセット List<DishesEntity>→List<SeeDishesDto>

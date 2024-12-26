@@ -47,4 +47,8 @@ public class ClerksEntity {
     
     @Column(name = "is_first_login", nullable = false)
     private Boolean isFirstLogin = true; // 登録時デフォルトでオンに設定
+    
+// Clerksエンティティからトークンを参照したいときは津尾以下
+//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    private List<TokensEntity> tokens; // トークンリスト
 }

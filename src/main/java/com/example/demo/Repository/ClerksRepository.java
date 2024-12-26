@@ -15,10 +15,12 @@ import jakarta.transaction.Transactional;
 public interface ClerksRepository extends JpaRepository<ClerksEntity, Integer> {
 
 	Optional<ClerksEntity> findByClerkNumberAndPassword(Integer clerkNumber, String password);
-	
-//	Optional<ClerksEntity> findByClerkNumber(Integer clerkNumber);
+
+	ClerksEntity findByClerkId(Integer clerkId);
 	
 	ClerksEntity findByClerkNumber(Integer clerkNumber);
+	
+	ClerksEntity findByMailAddress(String mailaddress);
 	
 	List<ClerksEntity> findByNameContaining(String name);
 	
@@ -40,10 +42,18 @@ public interface ClerksRepository extends JpaRepository<ClerksEntity, Integer> {
     @Query("SELECT c.mailAddress FROM ClerksEntity c WHERE c.clerkId = :clerkId")
     String findMailAddressByClerkId(Integer clerkId); // idに応じてメールアドレスを取得
     
+    @Query("SELECT c.clerkId FROM ClerksEntity c WHERE c.mailAddress = :mailAddress")
+    Integer findClerkIdByMailAddress(String mailAddress); // idに応じてメールアドレスを取得
+    
     @Transactional
     @Modifying
     @Query("UPDATE ClerksEntity c SET c.password = :password WHERE c.mailAddress = :mailAddress")
     int updatePasswordByMailAddress(@Param("password") String password, @Param("mailAddress") String mailAddress);
+    
+    @Transactional
+    @Modifying
+    @Query("UPDATE ClerksEntity c SET c.password = :password WHERE c.clerkId = :clerkId")
+    int updatePasswordByClerkId(@Param("password") String password, @Param("clerkId") Integer clerkId);
     
     // clerk_number に一致する is_first_login を false に更新
     @Transactional

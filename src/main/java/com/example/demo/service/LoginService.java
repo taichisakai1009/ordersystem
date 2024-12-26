@@ -62,11 +62,9 @@ public class LoginService {
 			model.addAttribute("mismatchError", mismatchError);
 			resetPasswordFlg = false;
 		} else {
-			String email = (String) session.getAttribute("email"); // null
-			System.out.println("パスワードを再設定します。email=" + email);
-			
+			Integer clerkId = (Integer) session.getAttribute("clerkId");
 			String hashPassword = passwordEncoder.encode(newPassword);
-			clerksRepository.updatePasswordByMailAddress(hashPassword, email);
+			clerksRepository.updatePasswordByClerkId(hashPassword, clerkId);
 
 			String resetConfirm = "パスワード再設定が完了しました。";
 			model.addAttribute("resetConfirm", resetConfirm);

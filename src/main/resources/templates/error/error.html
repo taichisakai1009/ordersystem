@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+	<title>エラー画面</title>
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+		<h1>エラー画面</h1>
+		<div class="sub-container">
+			<div class="margin">
+				<div class="error">
+					お手数ですが始めからやり直してください。
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
