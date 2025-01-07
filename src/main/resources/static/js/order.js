@@ -286,6 +286,7 @@ restaurantBillButton.addEventListener('click', () => {
 		});
 });
 
+// お会計処理
 function checkout() {
 	const passengerId = document.getElementById('passengerId').value;
 	// URL に passengerId をクエリパラメータとして追加

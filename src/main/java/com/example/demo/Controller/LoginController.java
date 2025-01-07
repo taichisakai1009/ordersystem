@@ -1,63 +1,78 @@
 package com.example.demo.Controller;
 
-import java.net.URLEncoder;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.thymeleaf.TemplateEngine;
 
 import com.example.demo.Entity.ClerksEntity;
 import com.example.demo.TwoFactorAuth.TwoFactorAuthService;
-import com.example.demo.service.ChoiceService;
 import com.example.demo.service.ClerksService;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.LoginService;
 import com.example.demo.service.TokenService;
+import com.example.demo.service.test;
 import com.example.demo.utils.HashUtil;
 import com.example.demo.utils.RSAUtil;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/login")
 public class LoginController {
-	@Autowired
-	private LoginService loginService;
+
+	private final LoginService loginService;
+
+	private final EmailService emailService;
+
+	private final ClerksService clerksService;
+
+	private final TokenService tokenService;
+
+	private final TwoFactorAuthService twoFactorAuthService;
+
+	private final HashUtil hashUtil;
+	
+//	private final PrintWriter printWriter;
 
 	@Autowired
-	private ChoiceService choiceService;
+	private test test;
 
-	@Autowired
-	private EmailService emailService;
+	LoginController(LoginService loginService, EmailService emailService, ClerksService clerksService,
+			TokenService tokenService, TwoFactorAuthService twoFactorAuthService, HashUtil hashUtil) {
+		this.loginService = loginService;
+		this.emailService = emailService;
+		this.clerksService = clerksService;
+		this.tokenService = tokenService;
+		this.twoFactorAuthService = twoFactorAuthService;
+		this.hashUtil = hashUtil;
+		System.out.println("loginServiceのインスタンス:" + loginService);
+		System.out.println("LoginControllerのコンストラクタ呼び出し");
+		System.out.println("フィールドインジェクション、依存関係の注入前：" + test);
+	}
 
-	@Autowired
-	private ClerksService clerksService;
+	// リンクの有効期限を示す定数(分)
+	private static final int RESET_LINK_EXPIRATION_MINUTES = 1;
 
-	@Autowired
-	private TemplateEngine templateEngine;
+	//	// ログイン判定(SplingSecurityの実装をしたら必要ない)
+	//		@RequestMapping(path = "/login", params = "login")
+	//		public String doLogin(Integer clerkNumber, String password) throws NoSuchAlgorithmException {
+	//			boolean loginFlg = loginService.doLogin(clerkNumber, password);
+	//			if (loginFlg) {
+	//				return "test/test";
+	//			} else {
+	//				return "login/login";
+	//			}
+	//		}
 
-	@Autowired
-	private TokenService tokenService;
-
-	@Autowired
-	private TwoFactorAuthService twoFactorAuthService;
-
-	@Autowired
-	private HashUtil hashUtil;
-
-//	// ログイン判定(SplingSecurityの実装をしたら必要ない)
-//		@RequestMapping(path = "/login", params = "login")
-//		public String doLogin(Integer clerkNumber, String password) throws NoSuchAlgorithmException {
-//			boolean loginFlg = loginService.doLogin(clerkNumber, password);
-//			if (loginFlg) {
-//				return "test/test";
-//			} else {
-//				return "login/login";
-//			}
-//		}
+	// 依存関係の注入が終わった直後に呼び出される
+	@PostConstruct
+	public void init() {
+		System.out.println("LoginController インスタンスが作成されました");
+		System.out.println("フィールドインジェクション、依存関係の注入後：" + test);
+	}
 
 	// ログイン画面の表示
 	@RequestMapping(path = "/login", params = "show")
@@ -96,36 +111,28 @@ public class LoginController {
 	// パスワード再設定用のリンクを載せたメールを送信
 	@RequestMapping(path = "/sendEmail", params = "send")
 	public String sendResetPassEmail(String email, HttpSession session, Model model) throws Exception {
-		ClerksEntity clerk = clerksService.findByMailaddress(email);
+		ClerksEntity clerk = clerksService.findByMailaddress(email); // メルアドから店員情報を取得
 		if (clerk == null) {
 			model.addAttribute("eMailNotExist", "指定されたメールアドレスは登録されていません。");
 			return "login/sendEmail";
 		} else {
-			int tokenLimitMinute = 1; // トークンの時間設定(分)
-			String token = tokenService.createToken(clerk, tokenLimitMinute);
-			String encryptedToken = RSAUtil.encrypt(token);
-			System.out.println("生のトークン：" + token + "文字数:" + token.length());
+			String resetLink = loginService.createResetLink(clerk, RESET_LINK_EXPIRATION_MINUTES); // リンク設定
+			emailService.sendSimpleMessage(email, "パスワード再設定用リンク", resetLink); // メール送信
 
-			encryptedToken = URLEncoder.encode(encryptedToken, "UTF-8"); // URLに送付するのでURLエンコード
-	
-			Integer clerkId = clerk.getClerkId();
-			String resetLink = "http://localhost:8080/login/resetPassword?show&encryptedToken=" + encryptedToken
-					+ "&clerkId=" + clerkId;
-			emailService.sendSimpleMessage(email, "パスワード再設定用リンク", resetLink);
-			model.addAttribute("sendMailConfirm", "指定されたメールアドレスにパスワード再設定用リンクを送付しました。<br>"
-					+ tokenLimitMinute + "分以内にリンクからアクセスしてください。");
+			String sendMailConfirm = "指定されたメールアドレスにパスワード再設定用リンクを送付しました。<br>"
+					+ RESET_LINK_EXPIRATION_MINUTES + "分以内にリンクからアクセスしてください。"; // 確認メッセージ
+			model.addAttribute("sendMailConfirm", sendMailConfirm); // 確認メッセージ
 			return "login/sendEmail";
 		}
 	}
 
 	// パスワード再設定用画面の表示
 	@RequestMapping(path = "/resetPassword", params = "show")
-	public String showResetPage(String encryptedToken, Integer clerkId, HttpSession session) throws Exception {
-		String token = RSAUtil.decrypt(encryptedToken);
-		System.out.println("復号トークン：" + token + "文字数:" + token.length());
+	public String showResetPage(String encryptedToken, HttpSession session) throws Exception {
+		String token = RSAUtil.decrypt(encryptedToken); // 複合化
 		String hashToken = hashUtil.hashStr(token); // 	ハッシュ化
-		boolean validateTokenFlg = tokenService.validateToken(hashToken); // 一旦生のハッシュ値を入れないと判定できない方が、強力？
-		System.out.println("トークン認証：" + validateTokenFlg + "、店員ID:" + clerkId);
+		Integer clerkId = tokenService.getClerkIdByToken(hashToken); // トークンから店員ID取得
+		boolean validateTokenFlg = tokenService.validateToken(hashToken);
 		if (validateTokenFlg) {
 			session.setAttribute("clerkId", clerkId);
 			return "login/resetPassword";

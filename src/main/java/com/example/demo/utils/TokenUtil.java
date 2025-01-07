@@ -9,8 +9,15 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
+
 @Component // このクラスはSpringのコンポーネントとして管理されることを示す
 public class TokenUtil {
+	
+    @PostConstruct
+    public void init() {
+        System.out.println("TokenUtil インスタンスが作成されました");
+    }
 
     private static final String HMAC_ALGO = "HmacSHA256"; // 使用するハッシュアルゴリズム（HMAC-SHA256）
 

@@ -1,5 +1,6 @@
 package com.example.demo.Controller;
 
+import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import com.example.demo.Dto.OrderRecordDtoList;
 import com.example.demo.Entity.DishesEntity;
 import com.example.demo.Entity.OrdersEntity;
 import com.example.demo.exception.MultiplePassengersException;
+import com.example.demo.service.BillExportService;
 import com.example.demo.service.ChoiceService;
 import com.example.demo.service.TitleService;
 
@@ -32,10 +34,12 @@ public class ChoiceController {
 
 	private final TitleService titleService;
 	private final ChoiceService choiceService;
+	private final BillExportService billExportService;
 
-	ChoiceController(TitleService titleService, ChoiceService choiceService) {
+	ChoiceController(TitleService titleService, ChoiceService choiceService, BillExportService billExportService) {
 		this.titleService = titleService;
 		this.choiceService = choiceService;
+		this.billExportService = billExportService;
 	}
 
 	// 注文画面の初期表示を行う。
@@ -84,7 +88,7 @@ public class ChoiceController {
 		return ResponseEntity.ok(response);
 	}
 
-	// 注文履歴を表示する。
+	// 注文履歴を表示する。(会計の際も使用)
 	@RequestMapping(path = "/choice", params = "viewRecord")
 	public ResponseEntity<Map<String, Object>> viewRecord(Model model, HttpSession session) {
 		Map<String, Object> response = new HashMap<>();
@@ -158,7 +162,7 @@ public class ChoiceController {
 		}
 		orderRecordDtoList.setTotalPrice(totalPrice);
 		orderRecordDtoList.setOrderRecordDtoList(OrderRecordList);
-		
+
 		// 注文履歴に追加
 		session.setAttribute("orderRecord", orderRecordDtoList);
 		System.out.println("注文情報：" + orderRecordDtoList);
@@ -170,8 +174,11 @@ public class ChoiceController {
 
 	// お会計
 	@RequestMapping(path = "/choice", params = "title")
-	public void restaurantBill(@RequestParam Integer passengerId, Model model, HttpSession session) {
+	public void restaurantBill(@RequestParam Integer passengerId, Model model, HttpSession session) throws IOException {
 		choiceService.restaurantBill(passengerId);
+		OrderRecordDtoList orderDetailsDtoList = (OrderRecordDtoList) session.getAttribute("orderRecord");
+		System.out.println("会計内容：" + orderDetailsDtoList);
+		billExportService.exportBillToExcel(orderDetailsDtoList, "output/bills/bill"+passengerId+".xlsx"); // 内容をExcel形式にして出力
 		session.removeAttribute("passengerId");
 		session.removeAttribute("orderRecord");
 		System.out.println("お会計passengerId：" + passengerId);

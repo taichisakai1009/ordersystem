@@ -1,5 +1,7 @@
 package com.example.demo.Controller;
 
+import java.io.IOException;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +21,7 @@ public class TitleController {
 
 	// タイトルの表示
 	@RequestMapping("/")
-	public String start() {
+	public String start() throws IOException {
 		return "title/title";
 	}
 

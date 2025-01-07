@@ -1,10 +1,7 @@
 package com.example.demo.service;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
+import java.net.URLEncoder;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -12,26 +9,26 @@ import org.springframework.ui.Model;
 import com.example.demo.Entity.ClerksEntity;
 import com.example.demo.Repository.ClerksRepository;
 import com.example.demo.utils.PasswordUtils;
+import com.example.demo.utils.RSAUtil;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
 
 @Service
 public class LoginService {
 
-	@Autowired
-	private ClerksRepository clerksRepository;
+	private final ClerksRepository clerksRepository;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
-	// SHA-256 ハッシュ化
-	public static String hash(String password) throws NoSuchAlgorithmException {
-		MessageDigest md = MessageDigest.getInstance("SHA-256");
-		md.update(password.getBytes());
-		byte[] hashBytes = md.digest();
-		String hash = Base64.getEncoder().encodeToString(hashBytes);
-		System.out.println("Hashed Password: " + hash);
-		return hash;
+	private final TokenService tokenService;
+
+	public LoginService(ClerksRepository clerksRepository, PasswordEncoder passwordEncoder, TokenService tokenService) {
+		this.clerksRepository = clerksRepository;
+		this.passwordEncoder = passwordEncoder;
+		this.tokenService = tokenService;
+		System.out.println("tokenServiceのインスタンス："+tokenService);
+		System.out.println("LoginServiceのコンストラクタ呼び出し");
 	}
 
 	// ログイン判定 詳細なエラーが出てしまうので非推奨
@@ -41,6 +38,11 @@ public class LoginService {
 	//				.findByClerkNumberAndPassword(clerkNumber, hashedPassword).isPresent();
 	//		return loginFlg;Optional<ClerksEntity>
 	//	}
+	
+    @PostConstruct
+    public void init() {
+        System.out.println("LoginService インスタンスが作成されました");
+    }
 
 	public boolean doLogin(Integer clerkNumber, String password) {
 		// 社員番号から検索
@@ -70,5 +72,15 @@ public class LoginService {
 			model.addAttribute("resetConfirm", resetConfirm);
 		}
 		return resetPasswordFlg;
+	}
+
+	// 店員情報と制限時間からリンクを作成
+	public String createResetLink(ClerksEntity clerk, int tokenLimitMinute) throws Exception {
+		String token = tokenService.createToken(clerk, tokenLimitMinute);
+		String encryptedToken = RSAUtil.encrypt(token);
+
+		encryptedToken = URLEncoder.encode(encryptedToken, "UTF-8"); // URLに送付するのでURLエンコード
+
+		return "http://localhost:8080/login/resetPassword?show&encryptedToken=" + encryptedToken;
 	}
 }

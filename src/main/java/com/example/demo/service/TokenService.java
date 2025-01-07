@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.Entity.ClerksEntity;
@@ -15,17 +14,29 @@ import com.example.demo.utils.HashUtil;
 import com.example.demo.utils.RSAUtil;
 import com.example.demo.utils.TokenUtil;
 
+import jakarta.annotation.PostConstruct;
+
 @Service
 public class TokenService {
 
-	@Autowired
-	private TokensRepository tokensRepository;
+	private final TokensRepository tokensRepository;
 
-	@Autowired
-	private TokenUtil tokenUtil;
+	private final TokenUtil tokenUtil;
 
-	@Autowired
-	private HashUtil hashUtil;
+	private final HashUtil hashUtil;
+
+	TokenService(TokensRepository tokensRepository, TokenUtil tokenUtil, HashUtil hashUtil) {
+		this.tokensRepository = tokensRepository;
+		this.tokenUtil = tokenUtil;
+		this.hashUtil = hashUtil;
+		System.out.println("TokenUtilのインスタンス:"+tokenUtil);
+		System.out.println("TokenServiceのコンストラクタ呼び出し");
+	}
+	
+    @PostConstruct
+    public void init() {
+        System.out.println("TokenService インスタンスが作成されました");
+    }
 
 	// トークンを作成してデータベースに保存
 	public String createToken(ClerksEntity user, int validityMinutes) throws Exception {
@@ -53,9 +64,8 @@ public class TokenService {
 		tokensEntity.setExpiresAt(LocalDateTime.now().plusMinutes(validityMinutes));
 		tokensEntity.setStatus(TokenStatus.ACTIVE);
 
-		tokensRepository.save(tokensEntity);
+		tokensRepository.save(tokensEntity); // データベースに保存
 
-		// データベースに保存 島くていいか
 		return token;
 	}
 
@@ -95,6 +105,12 @@ public class TokenService {
 			tokensRepository.save(tokensEntity);
 		}
 	}
+
+	// トークンから店員IDを取得,結果がない場合は0を返す
+	public Integer getClerkIdByToken(String token) {
+	    return Optional.ofNullable(tokensRepository.findClerkIdByToken(token)).orElse(0);
+	}
+
 
 	// トークンの定期的な削除
 	public void clearToken(Integer day) {
