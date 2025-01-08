@@ -6,6 +6,12 @@
 	right: 10px;
 }
 
+.sub-container #congestion-button {
+	position: absolute;
+	top: 70px;
+	right: 10px;
+}
+
 .sub-container #logout-button {
 	position: absolute;
 	bottom: 10px;

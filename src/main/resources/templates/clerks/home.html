@@ -20,6 +20,12 @@
 				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 				<button type="submit" id="profile-button" name="profile">ユーザー情報を表示</button>
 			</form>
+<!--			congestion-->
+			<form id="showCongestion" th:action="@{/clerks/home}">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+				<button type="submit" id="congestion-button" name="showCongestion">混雑状況を表示</button>
+			</form>
+			
 			<div class="margin">
 				<a href="/clerks/choice?show">利用客選択画面へ</a>
 			</div>

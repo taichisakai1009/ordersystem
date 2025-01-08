@@ -14,21 +14,21 @@ import jakarta.servlet.http.HttpSession;
 public class TitleController {
 
 	private final TitleService titleService;
-	
+
 	TitleController(TitleService titleService) {
 		this.titleService = titleService;
 	}
 
 	// タイトルの表示
 	@RequestMapping("/")
-	public String start() throws IOException {
+	public String start() throws IOException, InterruptedException {
 		return "title/title";
 	}
 
 	// タイトルに戻る
 	@RequestMapping(path = "/title/title", params = "title")
 	public String back(Model model, HttpSession session) {
-		
+
 		model.asMap().remove("passengerId"); // モデルから利用客IDを除去
 		session.removeAttribute("orderRecord"); // 注文履歴をリセット
 		titleService.addSeatNumber(model, session); // 座席番号をセッションから取得してモデル追加

@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,7 @@ import com.example.demo.Entity.DishesEntity;
 import com.example.demo.Entity.OrderDetailsEntity;
 import com.example.demo.Entity.OrdersEntity;
 import com.example.demo.Entity.PassengersEntity;
+import com.example.demo.Python.PythonExecutor;
 import com.example.demo.Repository.ClerksRepository;
 import com.example.demo.Repository.DishesRepository;
 import com.example.demo.Repository.OrderDetailsRepository;
@@ -33,6 +35,7 @@ import com.example.demo.service.ChoiceService;
 import com.example.demo.service.ClerksService;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 
 @Controller
 @RequestMapping("/clerks")
@@ -43,7 +46,7 @@ public class ClerksController {
 
 	@Autowired
 	ClerksService clerksService;
-	
+
 	@Autowired
 	TotpService totpService;
 
@@ -65,6 +68,9 @@ public class ClerksController {
 	@Autowired
 	HttpSession session;
 
+	@Autowired
+	PythonExecutor pythonExecutor;
+
 	// ホーム画面表示
 	@RequestMapping(path = "/home")
 	public String showAdminPage(Model model) {
@@ -72,6 +78,23 @@ public class ClerksController {
 		model.addAttribute("clerk", clerk);
 		return "clerks/home";
 	}
+
+	// 	時間ごとの利用客数を棒グラフで表示
+	@RequestMapping(path = "/home", params = "showCongestion")
+	public void showCongestion(Model model) {
+		ClerksEntity clerk = (ClerksEntity) session.getAttribute("clerk");
+		model.addAttribute("clerk", clerk);
+		String[] Data = clerksService.getCongestion();
+		System.out.println("hours:" + Data[0] + ", visitor_count:" + Data[1]);
+		pythonExecutor.pythonExecutionByParameter("showBarGraph", false, false, Data);
+	}
+	
+	// 毎日18時に利用客データを削除
+    @Transactional
+    @Scheduled(cron = "0 0 18 * * *")  // 毎日18時に実行
+    public void deleteAllPassengers() {
+        clerksService.deleteAllPassengers();
+    }
 
 	// 利用客選択画面表示
 	//	@PreAuthorize("hasRole('Regular', 'Manager')")
@@ -301,33 +324,32 @@ public class ClerksController {
 		return showChangePassword(model);
 	}
 
-//	// ログイン成功時のメソッド
-//	@RequestMapping(path = "/login")
-//	public String test(Model model, HttpSession session) {
-//		System.out.println("ログイン成功");
-//		// ログインじょうたい
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		boolean loginFlg = authentication != null
-//				&& authentication.isAuthenticated()
-//				&& !"anonymousUser".equals(authentication.getName());
-//		session.setAttribute("loginFlg", loginFlg);
-//		System.out.println("authentication：" + authentication);
-//		OrderRecordDtoList orderRecordDtoList = (OrderRecordDtoList) session.getAttribute("orderRecord");
-//		model.addAttribute("orderRecordDtoList", orderRecordDtoList);
-//		return "clerks/setDelivered";
-//	}
-//	
-//	@GetMapping("/two-factor-auth")
-//	public String twoFactorAuthPage(Model model, Authentication authentication) {
-//	    String username = authentication.getName();
-//	    String secretKey = totpService.generateSecretKey(username);
-//
-//	    String qrCodeUrl = totpService.getQRCodeUrl(username, secretKey);
-//	    model.addAttribute("qrCodeUrl", qrCodeUrl);
-//
-//	    return "twoFactorAuthPage";
-//	}
-
+	//	// ログイン成功時のメソッド
+	//	@RequestMapping(path = "/login")
+	//	public String test(Model model, HttpSession session) {
+	//		System.out.println("ログイン成功");
+	//		// ログインじょうたい
+	//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	//		boolean loginFlg = authentication != null
+	//				&& authentication.isAuthenticated()
+	//				&& !"anonymousUser".equals(authentication.getName());
+	//		session.setAttribute("loginFlg", loginFlg);
+	//		System.out.println("authentication：" + authentication);
+	//		OrderRecordDtoList orderRecordDtoList = (OrderRecordDtoList) session.getAttribute("orderRecord");
+	//		model.addAttribute("orderRecordDtoList", orderRecordDtoList);
+	//		return "clerks/setDelivered";
+	//	}
+	//	
+	//	@GetMapping("/two-factor-auth")
+	//	public String twoFactorAuthPage(Model model, Authentication authentication) {
+	//	    String username = authentication.getName();
+	//	    String secretKey = totpService.generateSecretKey(username);
+	//
+	//	    String qrCodeUrl = totpService.getQRCodeUrl(username, secretKey);
+	//	    model.addAttribute("qrCodeUrl", qrCodeUrl);
+	//
+	//	    return "twoFactorAuthPage";
+	//	}
 
 	// メニューに戻る
 	@RequestMapping(path = "/back")

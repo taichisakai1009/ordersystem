@@ -1,5 +1,6 @@
 package com.example.demo.Repository;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,5 +24,10 @@ public interface PassengersRepository extends JpaRepository<PassengersEntity, In
     @Transactional
     @Query("UPDATE PassengersEntity o SET o.undeliveredFlg = false WHERE o.passengerId = :passengerId")
     int updateUndeliveredFlgByPassengerId(@Param("passengerId") Integer passengerId);
+    
+    // start_timeがx:00:00からy:00:00の範囲にあるデータのカウントを取得
+    @Query("SELECT COUNT(p) FROM PassengersEntity p WHERE p.startTime BETWEEN :x AND :y")
+    int countByStartTimeBetween(LocalTime x, LocalTime y);
+
    
 }

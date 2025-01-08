@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,10 +111,10 @@ public class ClerksService {
 	public ClerksEntity findByMailaddress(String mailaddress) {
 
 		ClerksEntity clerk = clerksRepository.findByMailAddress(mailaddress);
-//		if (clerk == null) {
-//			ClerksEntity Emptyclerk = new ClerksEntity();
-//			return Emptyclerk;
-//		}
+		//		if (clerk == null) {
+		//			ClerksEntity Emptyclerk = new ClerksEntity();
+		//			return Emptyclerk;
+		//		}
 		return clerk;
 	}
 
@@ -188,6 +189,35 @@ public class ClerksService {
 			return 0;
 		}
 		return clerkId;
+	}
+
+	// 一時間ごとの利用客数を取得
+	public String[] getCongestion() {
+
+		// StringBuilderを使ってカンマ区切りの文字列を作成
+		StringBuilder times = new StringBuilder();
+		StringBuilder counts = new StringBuilder();
+
+		for (int i = 9; i < 18; i++) {
+			// xをLocalTime型に変換
+			LocalTime start = LocalTime.of(i, 0, 0); // x:00:00
+			LocalTime end = LocalTime.of(i + 1, 0, 0); // y:00:00
+			int count = passengersRepository.countByStartTimeBetween(start, end);
+			if (i > 9) {
+				times.append(",");
+				counts.append(",");
+			}
+			times.append(LocalTime.of(i, 30, 0));
+			counts.append(count);
+		}
+		String xData = times.toString();
+		String yData = counts.toString();
+		String[] Data = { xData, yData };
+		return Data;
+	}
+	
+	public void deleteAllPassengers() {
+		passengersRepository.deleteAll();
 	}
 
 	// エンティティを元にDtoにセット List<DishesEntity>→List<SeeDishesDto>
