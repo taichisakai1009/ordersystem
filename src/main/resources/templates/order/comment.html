@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>コメント画面</title>
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<!-- HTMLにCSRFトークンを埋め込む -->
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+</head>
+<body>
+	<div class="container">
+		<div class="sub-container">
+			ご利用ありがとうございました<br>
+			もしよろしければ、ご来場頂いた感想などをお書きください<br>
+			<form id="comment-send" th:action="@{/order/comment}">
+			<lavel for="comment-text">感想を記入：</lavel>
+			<input type="text" id="comment-text" name="comment" placeholder="ここに感想を記入">
+			<button type="submit" id="comment-send" name="send">送信</button>
+			</form>
+			<form id="end" th:action="@{/title/title}">
+				<button type="submit" name="title">タイトルに戻る</button>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

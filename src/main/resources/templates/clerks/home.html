@@ -20,12 +20,12 @@
 				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 				<button type="submit" id="profile-button" name="profile">ユーザー情報を表示</button>
 			</form>
-<!--			congestion-->
+			<!--			congestion-->
 			<form id="showCongestion" th:action="@{/clerks/home}">
 				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 				<button type="submit" id="congestion-button" name="showCongestion">混雑状況を表示</button>
 			</form>
-			
+
 			<div class="margin">
 				<a href="/clerks/choice?show">利用客選択画面へ</a>
 			</div>
@@ -35,6 +35,9 @@
 			<div class="margin" th:if="${clerk.role.id == 3}">
 				<a href="/admin/clerkRegist?show">店員登録画面へ</a>
 			</div>
+			<form id="backToTheTitle" th:action="@{/}" method="POST">
+				<button type="submit" id="back-Button">タイトルに戻る</button>
+			</form>
 			<form id="loginform" sec:authorize="isAuthenticated()" th:action="@{/logout}" method="POST">
 				<button type="submit" id="logout-button" name="show">ログアウト</button>
 			</form>

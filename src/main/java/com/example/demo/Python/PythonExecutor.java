@@ -17,16 +17,22 @@ public class PythonExecutor {
 	private static final String PYTHON_EXECUTABLE = "C:/Users/Anali/AppData/Local/Programs/Python/Python313/python.exe";
 	private static final String PYTHON_SCRIPT_BASEPATH = "C:/workspace2/MyPythonProject/";
 
-	public void pythonPrint(Process process) throws IOException {
+	public String pythonPrint(Process process) throws IOException {
 		// プロセスの標準出力を読み取る
 		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 		String line;
+		StringBuilder outputBuilder = new StringBuilder();
 		while ((line = reader.readLine()) != null) {
-			System.out.println(line); // Pythonからの出力を表示
+			outputBuilder.append(line).append("<br>"); // 1行ずつ取得して改行を追加
 		}
+		String output = outputBuilder.toString();
+		System.out.println(output);
+		return output;
 	}
 
-	public void pythonExecution(String pythonScriptName, boolean printOutput, boolean waitForCompletion) {
+	public String pythonExecution(String pythonScriptName, boolean printOutput, boolean waitForCompletion) {
+
+		String output = "";
 
 		ProcessBuilder processBuilder = new ProcessBuilder(PYTHON_EXECUTABLE,
 				PYTHON_SCRIPT_BASEPATH + pythonScriptName + ".py");
@@ -37,7 +43,7 @@ public class PythonExecutor {
 			Process process = processBuilder.start();
 
 			if (printOutput) {
-				pythonPrint(process);
+				output = pythonPrint(process);
 			}
 			; // プロセスの標準出力を読み取る
 
@@ -49,10 +55,13 @@ public class PythonExecutor {
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
+		return output;
 	}
 
-	public void pythonExecutionByParameter(String pythonScriptName, boolean printOutput, boolean waitForCompletion,
+	public String pythonExecutionByParameter(String pythonScriptName, boolean printOutput, boolean waitForCompletion,
 			String[] parameter) {
+		String output = "";
+
 		List<String> commandList = new ArrayList<>();
 		commandList.add(PYTHON_EXECUTABLE);
 		commandList.add(PYTHON_SCRIPT_BASEPATH + pythonScriptName + ".py");
@@ -67,7 +76,7 @@ public class PythonExecutor {
 			Process process = processBuilder.start();
 
 			if (printOutput) {
-				pythonPrint(process);
+				output = pythonPrint(process);
 			}
 			; // プロセスの標準出力を読み取る
 
@@ -79,5 +88,6 @@ public class PythonExecutor {
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
+		return output;
 	}
 }

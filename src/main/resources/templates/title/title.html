@@ -15,44 +15,51 @@
 		<div class="margin" sec:authorize="isAuthenticated()">
 			ログイン中　店員番号：<span sec:authentication="name" style="text-align: center;"></span>
 		</div>
-		<h1 class="shop-name" style="text-align: center;">Moon Palace</h1>
-		<form id="orderStart" action="/order/choice" method="POST">
-			<div class="center">
-				<div class="margin">
-					<!-- CSRFトークンを埋め込む -->
-					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-					<button type="submit" id="orderStartButton" class="start-button" name="show">注文を始める</button>
+		<div class="sub-container">
+
+			<h1 class="shop-name" style="text-align: center;">Moon Palace</h1>
+			<form id="orderStart" action="/order/choice" method="POST">
+				<div class="center">
+					<div class="margin">
+						<!-- CSRFトークンを埋め込む -->
+						<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+						<button type="submit" id="orderStartButton" class="start-button" name="show">注文を始める</button>
+					</div>
+				</div>
+				<div class="seatNumber">
+
+					<select id="seatNumber" name="seatNumber" required>
+						<!-- モデルにseatNumberが存在しない場合のデフォルト -->
+						<option value="" disabled th:if="${seatNumber == null}" selected>
+							座席番号を選択
+						</option>
+
+						<!-- モデルにseatNumberが存在する場合の選択状態 -->
+						<th:block th:if="${seatNumber != null}">
+							<option value="" disabled>座席番号を選択</option>
+						</th:block>
+
+						<!-- 1から99までのプルダウン項目 -->
+						<th:block th:each="i : ${#numbers.sequence(1, 99)}">
+							<option th:value="${i}" th:text="${i}"
+								th:attr="selected=${i == seatNumber ? 'selected' : null}">
+							</option>
+						</th:block>
+					</select>
+
+				</div>
+			</form>
+			<div class="link-button">
+				<div class="margin" id="show-passensior">
+					<a href="/clerks/home">店員の方はこちら</a>
 				</div>
 			</div>
-			<div class="seatNumber">
-
-				<select id="seatNumber" name="seatNumber" required>
-					<!-- モデルにseatNumberが存在しない場合のデフォルト -->
-					<option value="" disabled th:if="${seatNumber == null}" selected>
-						座席番号を選択
-					</option>
-
-					<!-- モデルにseatNumberが存在する場合の選択状態 -->
-					<th:block th:if="${seatNumber != null}">
-						<option value="" disabled>座席番号を選択</option>
-					</th:block>
-
-					<!-- 1から99までのプルダウン項目 -->
-					<th:block th:each="i : ${#numbers.sequence(1, 99)}">
-						<option th:value="${i}" th:text="${i}"
-							th:attr="selected=${i == seatNumber ? 'selected' : null}">
-						</option>
-					</th:block>
-				</select>
-
-			</div>
-		</form>
-<!--		 sec:authorize="!isAuthenticated()"-->
-		<div class="link-button">
-			<div class="margin" id="show-passensior">
-				<a href="/clerks/home">店員の方はこちら</a>
-			</div>
+			<form id="goToChat" th:action="@{/chat}">
+				<button type="submit" id="show-chatPage">対和室</button>
+			</form>
 		</div>
+		<!--		 sec:authorize="!isAuthenticated()"-->
+
 	</div>
 </body>
 

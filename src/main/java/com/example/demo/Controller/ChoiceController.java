@@ -178,10 +178,25 @@ public class ChoiceController {
 		choiceService.restaurantBill(passengerId);
 		OrderRecordDtoList orderDetailsDtoList = (OrderRecordDtoList) session.getAttribute("orderRecord");
 		System.out.println("会計内容：" + orderDetailsDtoList);
-		billExportService.exportBillToExcel(orderDetailsDtoList, "output/bills/bill"+passengerId+".xlsx"); // 内容をExcel形式にして出力
+//		billExportService.exportBillToExcel(orderDetailsDtoList, "output/bills/bill"+passengerId+".xlsx"); // 内容をExcel形式にして出力
 		session.removeAttribute("passengerId");
 		session.removeAttribute("orderRecord");
 		System.out.println("お会計passengerId：" + passengerId);
+	}
+	
+	// コメント画面表示
+	@RequestMapping(path = "/comment")
+	public String showCommentPage() {
+		return "order/comment";
+	}
+	
+	// コメント送信
+	@RequestMapping(path = "/comment", params = "send")
+	public String sendComment(String comment, Model model, HttpSession session) {
+		choiceService.sendComment(comment);
+		titleService.bye(model, session);// 会計を終えた利用客の情報を削除
+		titleService.addSeatNumber(model, session); // 座席番号をセッションから取得してモデル追加
+		return "title/title";
 	}
 
 	// fetchだとモデル追加をビューに反映できないのでwindow.location.hrefで呼び出す。

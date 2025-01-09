@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>チャット部屋</title>
+	<link th:href="@{/css/common.css}" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+		<div class="margin">
+			<a href="/title/title?title">タイトルに戻る</a>
+		</div>
+		<div class="sub-container">
+			<form id="chat-form" th:action="@{/chat}">
+				<lavel for="chat-text"></lavel>
+				<input type="text" id="chat-text" name="inputText" placeholder="質問内容を入力">
+				<button type="submit" name="sendMessage">↑</button>
+			</form>
+			<div id="chatAnswer" class="scroll" th:if="${chatAnswer}">
+				<div th:utext="${chatAnswer}"></div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

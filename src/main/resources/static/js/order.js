@@ -301,7 +301,7 @@ function checkout() {
 	})
 		.then(response => {
 			if (response.ok) {
-				window.location.href = "/title/title?title=true"; // リダイレクト先を指定
+				window.location.href = "/order/comment"; // リダイレクト先を指定
 				alert('お会計が完了しました。');
 				// 成功した場合、HTMLを受け取る
 				return response.text();

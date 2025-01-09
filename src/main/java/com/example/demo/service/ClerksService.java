@@ -215,7 +215,18 @@ public class ClerksService {
 		String[] Data = { xData, yData };
 		return Data;
 	}
-	
+
+	// すべての注文詳細を削除
+	public void deleteAllOrderDetails() {
+		orderDetailsRepository.deleteAll();
+	}
+
+	// すべての注文を削除
+	public void deleteAllOrders() {
+		ordersRepository.deleteAll();
+	}
+
+	// すべての利用客を削除
 	public void deleteAllPassengers() {
 		passengersRepository.deleteAll();
 	}

@@ -44,3 +44,9 @@
 	font-size: 30px;
 	cursor: pointer;
 }
+
+.sub-container #show-chatPage {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+}

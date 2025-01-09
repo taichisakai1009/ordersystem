@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,10 +14,12 @@ import com.example.demo.Dto.OrderDetailsDto;
 import com.example.demo.Dto.OrderDetailsDtoList;
 import com.example.demo.Dto.OrderRecordDto;
 import com.example.demo.Dto.OrderRecordDtoList;
+import com.example.demo.Entity.CommentsEntity;
 import com.example.demo.Entity.DishesEntity;
 import com.example.demo.Entity.OrderDetailsEntity;
 import com.example.demo.Entity.OrdersEntity;
 import com.example.demo.Entity.PassengersEntity;
+import com.example.demo.Repository.CommentsRepository;
 import com.example.demo.Repository.DishesRepository;
 import com.example.demo.Repository.OrderDetailsRepository;
 import com.example.demo.Repository.OrdersRepository;
@@ -32,13 +35,15 @@ public class ChoiceService {
 	private final PassengersRepository passengersRepository;
 	private final OrdersRepository ordersRepository;
 	private final OrderDetailsRepository orderDetailsRepository;
+	private final CommentsRepository commentsRepository;
 
 	ChoiceService(DishesRepository dishesRepository, PassengersRepository passengersRepository,
-			OrdersRepository ordersRepository, OrderDetailsRepository orderDetailsRepository) {
+			OrdersRepository ordersRepository, OrderDetailsRepository orderDetailsRepository, CommentsRepository commentsRepository) {
 		this.dishesRepository = dishesRepository;
 		this.passengersRepository = passengersRepository;
 		this.ordersRepository = ordersRepository;
 		this.orderDetailsRepository = orderDetailsRepository;
+		this.commentsRepository = commentsRepository;
 	}
 
 	// 注文番号に応じて商品エンティティを検索
@@ -295,4 +300,15 @@ public class ChoiceService {
 		passenger.setEatingFlg(false);
 		passengersRepository.saveAndFlush(passenger);
 	}
+	
+	// コメント送信 commentsRepository
+	public void sendComment(String comment) {
+		CommentsEntity commentsEntity = new CommentsEntity();
+		Date date = new Date();
+		commentsEntity.setComment(comment);
+		commentsEntity.setCommentDate(date);
+		commentsRepository.save(commentsEntity);
+	}
+	
+	
 }

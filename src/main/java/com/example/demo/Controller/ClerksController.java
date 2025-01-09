@@ -88,13 +88,16 @@ public class ClerksController {
 		System.out.println("hours:" + Data[0] + ", visitor_count:" + Data[1]);
 		pythonExecutor.pythonExecutionByParameter("showBarGraph", false, false, Data);
 	}
-	
-	// 毎日18時に利用客データを削除
-    @Transactional
-    @Scheduled(cron = "0 0 18 * * *")  // 毎日18時に実行
-    public void deleteAllPassengers() {
-        clerksService.deleteAllPassengers();
-    }
+
+	// 毎日18時に注文詳細、注文、利用客データを削除
+	@Transactional
+	@Scheduled(cron = "0 0 18 * * *") // 毎日18時に実行
+	public void deleteAllPassengers() {
+		clerksService.deleteAllOrderDetails();
+		clerksService.deleteAllOrders();
+		clerksService.deleteAllPassengers();
+		System.out.println("注文詳細、注文、利用客データ削除");
+	}
 
 	// 利用客選択画面表示
 	//	@PreAuthorize("hasRole('Regular', 'Manager')")

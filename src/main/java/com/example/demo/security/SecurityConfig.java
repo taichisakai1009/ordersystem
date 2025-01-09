@@ -67,6 +67,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 						.requestMatchers("/order/**").permitAll()
 						.requestMatchers("/login/**").permitAll()
 						.requestMatchers("/two-factor-auth/**").permitAll()
+						.requestMatchers("/chat/**").permitAll()
 						.requestMatchers("/css/**").permitAll() // css
 						.requestMatchers("/js/**").permitAll() // js
 						.requestMatchers("/actuator/beans").permitAll() // Bean確認URL
