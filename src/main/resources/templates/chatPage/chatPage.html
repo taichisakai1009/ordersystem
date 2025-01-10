@@ -5,6 +5,7 @@
 	<meta charset="UTF-8">
 	<title>チャット部屋</title>
 	<link th:href="@{/css/common.css}" rel="stylesheet">
+	<link th:href="@{/css/chatPage.css}" rel="stylesheet">
 </head>
 
 <body>
@@ -19,8 +20,9 @@
 				<button type="submit" name="sendMessage">↑</button>
 			</form>
 			<div id="chatAnswer" class="scroll" th:if="${chatAnswer}">
-				<div th:utext="${chatAnswer}"></div>
+				<div th:text="${chatAnswer}" style="white-space: pre-wrap;"></div>
 			</div>
+			<div id="chat-exit-notice">会話を終了する場合は「exit」と入力して送信してください。</div>
 		</div>
 	</div>
 </body>

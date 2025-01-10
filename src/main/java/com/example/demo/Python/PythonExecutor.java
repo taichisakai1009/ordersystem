@@ -19,14 +19,17 @@ public class PythonExecutor {
 
 	public String pythonPrint(Process process) throws IOException {
 		// プロセスの標準出力を読み取る
-		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
 		String line;
 		StringBuilder outputBuilder = new StringBuilder();
 		while ((line = reader.readLine()) != null) {
-			outputBuilder.append(line).append("<br>"); // 1行ずつ取得して改行を追加
+			System.out.println("line:" + line);
+			outputBuilder.append(line)
+					.append("\n"); // 1行ずつ取得して改行を追加"\n""<br>"
 		}
+		System.out.println("outputBuilder:" + outputBuilder);
 		String output = outputBuilder.toString();
-		System.out.println(output);
+		System.out.println("output:" + output);
 		return output;
 	}
 
