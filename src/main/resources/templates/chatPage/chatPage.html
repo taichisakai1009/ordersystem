@@ -18,6 +18,13 @@
 				<lavel for="chat-text"></lavel>
 				<input type="text" id="chat-text" name="inputText" placeholder="質問内容を入力">
 				<button type="submit" name="sendMessage">↑</button>
+
+				<div th:if="${shopModeInfo != null}" id="shopModeInfo" th:text="${shopModeInfo}">
+
+				</div>
+				<input type="hidden" id="chat-mode-parameter" name="parameter">
+				<button type="button" id="change-mode-button" name="sendMessage"
+					onclick="changeParameter()">汎用モード</button>
 			</form>
 			<div id="chatAnswer" class="scroll" th:if="${chatAnswer}">
 				<div th:text="${chatAnswer}" style="white-space: pre-wrap;"></div>
@@ -25,6 +32,7 @@
 			<div id="chat-exit-notice">会話を終了する場合は「exit」と入力して送信してください。</div>
 		</div>
 	</div>
+	<script th:src="@{/js/chatPage.js}"></script>
 </body>
 
 </html>

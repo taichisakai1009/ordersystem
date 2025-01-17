@@ -23,11 +23,9 @@ public class PythonExecutor {
 		String line;
 		StringBuilder outputBuilder = new StringBuilder();
 		while ((line = reader.readLine()) != null) {
-			System.out.println("line:" + line);
 			outputBuilder.append(line)
 					.append("\n"); // 1行ずつ取得して改行を追加"\n""<br>"
 		}
-		System.out.println("outputBuilder:" + outputBuilder);
 		String output = outputBuilder.toString();
 		System.out.println("output:" + output);
 		return output;

@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.demo.Python.PythonExecutor;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class ChatController {
 
@@ -23,14 +25,24 @@ public class ChatController {
 
 	// チャットに質問
 	@RequestMapping(path = "/chat", params = "sendMessage")
-	public String sendMessage(String inputText, Model model) {
-		String responce = pythonExecutor.pythonExecution("MySQLConnector", true, false);
-		
-		inputText = responce += inputText;
-		System.out.println("質問：" + responce);
+	public String sendMessage(String inputText, String parameter, Model model, HttpSession session) {
+		if (parameter.equals("special")) {
+			String responce = pythonExecutor.pythonExecution("MySQLConnector", true, false);
+			inputText = responce += inputText;
+			String shopModeInfo = "感想データを読み込みました。";
+			session.setAttribute("shopModeInfo", shopModeInfo);
+		}
 		String[] commandArray = { inputText };
 		String chatAnswer = pythonExecutor.pythonExecutionByParameter("chatBot", true, false, commandArray);
+		System.out.println("チャット内容：" + chatAnswer);
+		if (chatAnswer.trim().equals("会話を終了し、履歴ファイルを消去しました。")) {
+			System.out.println("セッション削除");
+			session.removeAttribute("shopModeInfo");
+		}
+		;
 		model.addAttribute("chatAnswer", chatAnswer);
+		String shopModeInfo = (String) session.getAttribute("shopModeInfo");
+		model.addAttribute("shopModeInfo", shopModeInfo);
 		return "chatPage/chatPage";
 	}
 }

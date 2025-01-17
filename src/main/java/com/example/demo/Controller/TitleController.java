@@ -27,7 +27,8 @@ public class TitleController {
 	// タイトルの表示
 	@RequestMapping("/")
 	public String start() throws IOException, InterruptedException {
-//		pythonExecutor.pythonExecution("jsonFileTest", true, false);
+		System.out.println("タイトルの表示");
+		pythonExecutor.pythonExecution("sympyTest", true, false);
 		return "title/title";
 	}
 
